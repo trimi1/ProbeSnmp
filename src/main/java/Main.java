@@ -8,6 +8,5 @@ public class Main {
         var MulticastSending = new probeThread();
         var scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutor.scheduleAtFixedRate(MulticastSending, 0, 90000, TimeUnit.MILLISECONDS);
-
     }
 }

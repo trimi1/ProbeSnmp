@@ -1,5 +1,8 @@
 package thread;
 
+import be.helmo.reseau.analyzer.Analyzer;
+import be.helmo.reseau.builder.Builder;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -18,10 +21,14 @@ public class probeThread implements Runnable{
     }
     public void run() {
         try (MulticastSocket socket = new MulticastSocket()) {
-            String MultiCastMessage = buildProbe(" 224.0.0.254", 6022);
             InetAddress group = InetAddress.getByName(" 224.0.0.254");
+            String MultiCastMessage = "PROBE SMNP 60202";
+            Builder probeMessage = new Builder();
+
+            probeMessage.buildProbe(MultiCastMessage);
+            InetAddress group = InetAddress.getByName("224.0.0.254");
             byte[] message = MultiCastMessage.getBytes();
-            DatagramPacket packet = new DatagramSocket(message, message.length,group,6022);
+            DatagramPacket packet = new DatagramSocket(message, message.length, group, 6022);
 
             socket.send(packet);
             socket.close();

@@ -18,7 +18,6 @@ public class probeThread implements Runnable{
     }
     public void run() {
         try (MulticastSocket socket = new MulticastSocket()) {
-            //try(BufferedReader reader = Files.newBufferedReader(Paths.get("src/ressouces/Config.ini"))){
             String MultiCastMessage = buildProbe(" 224.0.0.254", 6022);
             InetAddress group = InetAddress.getByName(" 224.0.0.254");
             byte[] message = MultiCastMessage.getBytes();

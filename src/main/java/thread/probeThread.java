@@ -1,6 +1,5 @@
 package thread;
 
-import be.helmo.reseau.analyzer.Analyzer;
 import be.helmo.reseau.builder.Builder;
 
 import java.io.BufferedReader;

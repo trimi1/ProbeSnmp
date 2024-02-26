@@ -1,0 +1,9 @@
+{
+  "protocol": "snmp",
+  "multicastAddress": "224.0.0.254",
+  "multicastPort": 60202,
+  "multicastInterface": "monInterfaceReseau_12345",
+  "multicastDelay": 10,
+  "unicastPort": 60000,
+  "aesKey": "MaCleAESGenereeParMesSoins"
+}

@@ -14,7 +14,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 
     implementation project(':Grammar')
-    implementation 'org.json:json:20210307'
+    implementation 'org.json:json:20231013'
+    implementation 'org.snmp4j:snmp4j:3.7.7'
 }
 
 test {

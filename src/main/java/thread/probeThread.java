@@ -2,6 +2,7 @@ package thread;
 
 import be.helmo.reseau.builder.Builder;
 import org.json.JSONObject;
+import org.snmp4j.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,20 +35,21 @@ public class probeThread implements Runnable{
             int unicastPort = json.getInt("unicastPort");
             String aesKey = json.getString("aesKey");
 
+            // join a Multicast group and send the group salutations
             InetAddress group = InetAddress.getByName(multicastAddress);
-            String MultiCastMessage = "PROBE SMNP 60202";
             Builder probeMessage = new Builder();
+            String MultiCastMessage = probeMessage.buildProbe("SNMP", 60202);
 
-            probeMessage.buildProbe("SMNP", 60202);
-            InetAddress group = InetAddress.getByName("224.0.0.254");
-            byte[] message = MultiCastMessage.getBytes();
-            DatagramPacket packet = new DatagramSocket(message, message.length, group, 6022);
+            InetAddress mcastaddr = InetAddress.getByName(multicastAddress);
 
-            socket.send(packet);
-            socket.close();
-            /*}catch(IOException e){
-                e.printStackTrace();
-            }*/
+//            byte[] message = MultiCastMessage.getBytes();
+//            DatagramPacket packet = new DatagramSocket(message, message.length, group, 6022);
+//
+//            socket.send(packet);
+//            socket.close();
+//            /*}catch(IOException e){
+//                e.printStackTrace();
+//            }*/
 
         }catch(Exception e){
             e.printStackTrace();

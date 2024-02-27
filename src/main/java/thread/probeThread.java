@@ -1,6 +1,8 @@
 package thread;
 
 import be.helmo.reseau.builder.Builder;
+import org.json.JSONObject;
+import org.snmp4j.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,6 +10,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 
 public class probeThread implements Runnable{
@@ -20,20 +24,32 @@ public class probeThread implements Runnable{
     }
     public void run() {
         try (MulticastSocket socket = new MulticastSocket()) {
-            InetAddress group = InetAddress.getByName(" 224.0.0.254");
-            String MultiCastMessage = "PROBE SMNP 60202";
+            String content = new String(Files.readAllBytes(Paths.get("config-probes.json")));
+            JSONObject json = new JSONObject(content);
+
+            String protocol = json.getString("protocol");
+            String multicastAddress = json.getString("multicastAddress");
+            int multicastPort = json.getInt("multicastPort");
+            String multicastInterface = json.getString("multicastInterface");
+            int multicastDelay = json.getInt("multicastDelay");
+            int unicastPort = json.getInt("unicastPort");
+            String aesKey = json.getString("aesKey");
+
+            // join a Multicast group and send the group salutations
+            InetAddress group = InetAddress.getByName(multicastAddress);
             Builder probeMessage = new Builder();
+            String MultiCastMessage = probeMessage.buildProbe("SNMP", 60202);
 
-            probeMessage.buildProbe(MultiCastMessage);
-            InetAddress group = InetAddress.getByName("224.0.0.254");
-            byte[] message = MultiCastMessage.getBytes();
-            DatagramPacket packet = new DatagramSocket(message, message.length, group, 6022);
+            InetAddress mcastaddr = InetAddress.getByName(multicastAddress);
 
-            socket.send(packet);
-            socket.close();
-            /*}catch(IOException e){
-                e.printStackTrace();
-            }*/
+//            byte[] message = MultiCastMessage.getBytes();
+//            DatagramPacket packet = new DatagramSocket(message, message.length, group, 6022);
+//
+//            socket.send(packet);
+//            socket.close();
+//            /*}catch(IOException e){
+//                e.printStackTrace();
+//            }*/
 
         }catch(Exception e){
             e.printStackTrace();
@@ -43,4 +59,3 @@ public class probeThread implements Runnable{
         (new Thread(this)).start();
     }
 }
-

@@ -1,12 +1,9 @@
 import snmpversions.*;
-import thread.probeThread;
+import thread.ProbeThread;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.json.JSONObject;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -21,12 +18,13 @@ public class Main {
         String valueSNMPv3 = snmpv3test.getValue("v3.swi.la", 6161, "superswila", "iLikeGodSWILA2024", "TeamG0D$wila", "1.3.6.1.4.1.2021.4.11.0");
         System.out.println("IIIIIIIIIICIIIIIIIIII v3 :" + valueSNMPv3 +"\n");
 
-//        var MulticastSending = new probeThread();
-//        var scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
-//
-//        String content = new String(Files.readAllBytes(Paths.get("config-probes.json")));
+        ConfigReader configReader = new ConfigReader("C:\\Users\\2001j\\Reseaux\\projet\\ProbeSnmp\\src\\main\\java\\ressources\\configProbes.json");
+        var MulticastSending = new ProbeThread(configReader.getMulticastAddress(), configReader.getMulticastPort());
+        var scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutor.scheduleAtFixedRate(MulticastSending, 0, 90, TimeUnit.SECONDS);
+
+//        String content = new String(Files.readAllBytes(Paths.get("configProbes.json")));
 //        JSONObject json = new JSONObject(content);
 //        int multicastDelay = json.getInt("multicastDelay");
-//        scheduledExecutor.scheduleAtFixedRate(MulticastSending, 0, multicastDelay, TimeUnit.SECONDS);
     }
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.NetworkInterface;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -84,6 +85,8 @@ public class ProbeThread implements Runnable{
         byte[] bytes = message.getBytes();
         try (MulticastSocket socket = new MulticastSocket()) {
             InetAddress group = InetAddress.getByName(multicastAdress);
+            NetworkInterface networkInterface = NetworkInterface.getByName("wireless_32768");
+            socket.setNetworkInterface(networkInterface);
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, group, multicastPort);
             socket.send(packet);
         } catch (IOException e) {

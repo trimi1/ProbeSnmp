@@ -21,7 +21,7 @@ public class Main {
         ConfigReader configReader = new ConfigReader("C:\\Users\\2001j\\Reseaux\\projet\\ProbeSnmp\\src\\main\\java\\ressources\\configProbes.json");
         var MulticastSending = new ProbeThread(configReader.getMulticastAddress(), configReader.getMulticastPort());
         var scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutor.scheduleAtFixedRate(MulticastSending, 0, 90, TimeUnit.SECONDS);
+        scheduledExecutor.scheduleAtFixedRate(MulticastSending, 0, 10, TimeUnit.SECONDS);
 
 //        String content = new String(Files.readAllBytes(Paths.get("configProbes.json")));
 //        JSONObject json = new JSONObject(content);

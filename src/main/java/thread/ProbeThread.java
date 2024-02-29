@@ -10,6 +10,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.util.List;
 
 
 public class ProbeThread implements Runnable{
@@ -17,13 +18,15 @@ public class ProbeThread implements Runnable{
     private int multicastPort;
     private String multicastAdress;
     private String multicastInterface;
+    private IBuilder builder;
 
     public ProbeThread(String multicastAddress, int multicastPort, String multicastInterface) {
         this.multicastAdress = multicastAddress;
         this.multicastPort = multicastPort;
         this.multicastInterface = multicastInterface;
-        probeThread = new Thread(this);
-        probeThread.start();
+        this.builder = new Builder();
+        this.probeThread = new Thread(this);
+        this.probeThread.start();
     }
 
     public void run() {
@@ -44,13 +47,11 @@ public class ProbeThread implements Runnable{
     }
 
     private void sendProbeMessage(String protocol, int port){
-        IBuilder builder = new Builder();
         String message = builder.buildProbe(protocol, port);
         multicastSender(message);
     }
 
     public void sendDataMessage(String protocol, int port){
-        IBuilder builder = new Builder();
         String message = builder.buildData(protocol, port);
         multicastSender(message);
     }

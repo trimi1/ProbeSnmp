@@ -5,10 +5,8 @@ import be.helmo.reseau.interfaces.IBuilder;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.NetworkInterface;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,7 +24,11 @@ public class ProbeThread implements Runnable{
         probeThread.start();
     }
     public void run() {
-        sendProbeMessage("SNMP", 60202);
+        try {
+            sendProbeMessage("SNMP", 60202);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         /*try (MulticastSocket socket = new MulticastSocket()) {
             Path configFilePath = Paths.get("C:\\Users\\2001j\\Reseaux\\projet\\ProbeSnmp\\src\\main\\java\\ressources\\configProbes.json");
             if (!Files.exists(configFilePath))
@@ -66,32 +68,78 @@ public class ProbeThread implements Runnable{
         }*/
     }
 
-    private void sendProbeMessage(String Protocol, int port){
-        IBuilder builder = new Builder();
-        String message = builder.buildProbe(Protocol, port);
-        byte[] bytes = message.getBytes();
-        try (MulticastSocket socket = new MulticastSocket()) {
+    private void sendProbeMessage(String Protocol, int port) throws IOException {
+
+        /*try {
+            IBuilder builder = new Builder();
+            String message = builder.buildProbe(Protocol, port);
+            byte[] bytes = message.getBytes();
+
             InetAddress group = InetAddress.getByName(multicastAdress);
+            NetworkInterface netIf = NetworkInterface.getByName("wireless_32768");
+
+            InetAddress localAddress = netIf.getInetAddresses().nextElement();
+
+            DatagramSocket socket = new DatagramSocket(multicastPort, localAddress);
+
+
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, group, multicastPort);
             socket.send(packet);
+            socket.close();
+
+
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+        IBuilder builder = new Builder();
+        String message = builder.buildProbe(Protocol, port);
+        InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
+        InetSocketAddress group = new InetSocketAddress(mcastaddr, port);
+        NetworkInterface netIf = NetworkInterface.getByName("wireless_32768");
+        MulticastSocket s = new MulticastSocket(port);
+
+        s.joinGroup(new InetSocketAddress(mcastaddr, 0), netIf);
+        byte[] msgBytes = message.getBytes(StandardCharsets.UTF_8);
+        DatagramPacket hi = new DatagramPacket(msgBytes, msgBytes.length, group);
+        s.send(hi);
+        // get their responses!
+        byte[] buf = new byte[1000];
+        DatagramPacket recv = new DatagramPacket(buf, buf.length);
+        s.receive(recv);
+        // OK, I'm done talking - leave the group...
+        s.leaveGroup(group, netIf);
     }
 
-    public void sendDataMessage(String Protocol, int port){
-        IBuilder builder = new Builder();
+    public void sendDataMessage(String Protocol, int port) throws IOException {
+        /*IBuilder builder = new Builder();
         String message = builder.buildProbe(Protocol, port);
         byte[] bytes = message.getBytes();
         try (MulticastSocket socket = new MulticastSocket()) {
             InetAddress group = InetAddress.getByName(multicastAdress);
-            NetworkInterface networkInterface = NetworkInterface.getByName("wireless_32768");
+            NetworkInterface networkInterface = NetworkInterface.getByName("ethernet_32777");
             socket.setNetworkInterface(networkInterface);
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, group, multicastPort);
             socket.send(packet);
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+        IBuilder builder = new Builder();
+        String message = builder.buildProbe(Protocol, port);
+        InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
+        InetSocketAddress group = new InetSocketAddress(mcastaddr, port);
+        NetworkInterface netIf = NetworkInterface.getByName("ethernet_32776");
+        MulticastSocket s = new MulticastSocket(port);
+
+        s.joinGroup(new InetSocketAddress(mcastaddr, 0), netIf);
+        byte[] msgBytes = message.getBytes(StandardCharsets.UTF_8);
+        DatagramPacket hi = new DatagramPacket(msgBytes, msgBytes.length, group);
+        s.send(hi);
+        // get their responses!
+        byte[] buf = new byte[1000];
+        DatagramPacket recv = new DatagramPacket(buf, buf.length);
+        s.receive(recv);
+        // OK, I'm done talking - leave the group...
+        s.leaveGroup(group, netIf);
     }
     public void startThread() {
         (new Thread(this)).start();

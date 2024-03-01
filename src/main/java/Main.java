@@ -46,9 +46,6 @@ public class Main {
         String input1 = "snmp1!snmp://superswila:TeamG0D$wila#iLikeGodSWILA2024@v3.swi.la:6161/1.3.6.1.4.1.2021.4.11.0!10000!99999999";
         String input2 = "snmp2!snmp://1amMemb3r0fTe4mSWILA@trkr.swilabus.com:161/1.3.6.1.4.1.2021.11.11.0!10!99999999";
 
-        DataParser dataParser = new DataParser();
-        String extractedUrl = dataParser.extractUrl(input1);
-        System.out.println("Extracted URL : " + extractedUrl);
 
         String AUGMENTED_URL_REGEX = "([A-Za-z]|[0-9])" + "{5,10}" + "!" + "([A-Za-z]|[0-9])" + "{3,15}" + "://(" + "([A-Za-z]|[0-9])" + "{3,50}" + "(:" + "(" + "(" + "([A-Za-z]|[0-9])" + "|[-_=./+*$°()\\[\\]{}^]" + ")" + "{3,50}" + "(#" + "(" + "([A-Za-z]|[0-9])" + "|[-_=./+*$°()\\[\\]{}^]" + ")" + "{3,50}" + ")?" + ")?@)?" + "(" + "([A-Za-z]|[0-9])" + "|" + "\\." + "|" + "_" + "|" + "-" + ")" + "{3,50}" + "(" + "[0-9]" + "{1,5}" + ")?" + "/(" + "([A-Za-z]|[0-9])" + "|[.\\-_]){0,100}" + "!" + "[0-9]" + "{1,8}" + "!" + "[0-9]" + "{1,8})";
         System.out.println("Input1 matches AUGMENTED_URL_REGEX: " + input1.matches(AUGMENTED_URL_REGEX));

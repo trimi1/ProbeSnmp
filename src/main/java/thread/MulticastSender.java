@@ -18,17 +18,19 @@ public class MulticastSender implements Runnable{
     private int multicastPort;
     private String multicastAdress;
     private String multicastInterface;
+    private int uniCastPort;
     private String protocol;
-    public MulticastSender(String multicastAddress, int multicastPort, String multicastInterface, String protocol) {
+    public MulticastSender(String multicastAddress, int multicastPort, String multicastInterface, String protocol, int uniCastPort) {
         this.multicastAdress = multicastAddress;
         this.multicastPort = multicastPort;
         this.multicastInterface = multicastInterface;
+        this.uniCastPort = uniCastPort;
         this.protocol = protocol;
         startThread();
     }
     public void run() {
         try {
-            sendProbeMessage(protocol, multicastPort);
+            sendProbeMessage(protocol, uniCastPort);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -48,11 +50,11 @@ public class MulticastSender implements Runnable{
         IBuilder builder = new Builder();
         String message = builder.buildProbe(Protocol, port);
         InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
-        InetSocketAddress group = new InetSocketAddress(mcastaddr, port);
+        InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);
         NetworkInterface netIf = NetworkInterface.getByName(multicastInterface);
-        MulticastSocket s = new MulticastSocket(port);
+        MulticastSocket s = new MulticastSocket(multicastPort);
 
-        s.joinGroup(new InetSocketAddress(mcastaddr, port), netIf);
+        s.joinGroup(new InetSocketAddress(mcastaddr, 0), netIf);
         byte[] msgBytes = message.getBytes(StandardCharsets.UTF_8);
         DatagramPacket hi = new DatagramPacket(msgBytes, msgBytes.length, group);
         s.send(hi);

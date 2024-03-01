@@ -24,52 +24,18 @@ public class MulticastSender implements Runnable{
         this.multicastPort = multicastPort;
         this.multicastInterface = multicastInterface;
         this.protocol = protocol;
-        probeThread = new Thread(this);
-        probeThread.start();
+        startThread();
     }
     public void run() {
-        sendProbeMessage(protocol, multicastPort);
-        /*try (MulticastSocket socket = new MulticastSocket()) {
-            Path configFilePath = Paths.get("C:\\Users\\2001j\\Reseaux\\projet\\ProbeSnmp\\src\\main\\java\\ressources\\configProbes.json");
-            if (!Files.exists(configFilePath))
-            {
-                System.out.print("fichier introuvable");
-                return;
-            }
-            String content = new String(Files.readAllBytes(configFilePath));
-            JSONObject json = new JSONObject(content);
-
-
-            String protocol = json.getString("protocol");
-            String multicastAddress = json.getString("multicastAddress");
-            int multicastPort = json.getInt("multicastPort");
-            String multicastInterface = json.getString("multicastInterface");
-            int multicastDelay = json.getInt("multicastDelay");
-            int unicastPort = json.getInt("unicastPort");
-            String aesKey = json.getString("aesKey");*/
-        // join a Multicast group and send the group salutations
-//            InetAddress group = InetAddress.getByName(multicastAddress);
-//            Builder probeMessage = new Builder();
-//            String MultiCastMessage = probeMessage.buildProbe("SNMP", 60202);
-
-//            InetAddress mcastaddr = InetAddress.getByName(multicastAddress);
-
-//            byte[] message = MultiCastMessage.getBytes();
-//            DatagramPacket packet = new DatagramSocket(message, message.length, group, 6022);
-
-//            socket.send(packet);
-//            socket.close();
-            /*}catch(IOException e){
-                e.printStackTrace();
-            }*/
-
-        /*}catch(Exception e){
-            e.printStackTrace();
-        }*/
+        try {
+            sendProbeMessage(protocol, multicastPort);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void sendProbeMessage(String Protocol, int port){
-        IBuilder builder = new Builder();
+    synchronized private void sendProbeMessage(String Protocol, int port) throws IOException {
+        /*IBuilder builder = new Builder();
         String message = builder.buildProbe(Protocol, port);
         byte[] bytes = message.getBytes();
         try (MulticastSocket socket = new MulticastSocket()) {
@@ -78,7 +44,18 @@ public class MulticastSender implements Runnable{
             socket.send(packet);
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+        IBuilder builder = new Builder();
+        String message = builder.buildProbe(Protocol, port);
+        InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
+        InetSocketAddress group = new InetSocketAddress(mcastaddr, port);
+        NetworkInterface netIf = NetworkInterface.getByName(multicastInterface);
+        MulticastSocket s = new MulticastSocket(port);
+
+        s.joinGroup(new InetSocketAddress(mcastaddr, port), netIf);
+        byte[] msgBytes = message.getBytes(StandardCharsets.UTF_8);
+        DatagramPacket hi = new DatagramPacket(msgBytes, msgBytes.length, group);
+        s.send(hi);
     }
 
     public void sendDataMessage(String Protocol, int port) throws IOException {
@@ -101,16 +78,10 @@ public class MulticastSender implements Runnable{
         NetworkInterface netIf = NetworkInterface.getByName(multicastInterface);
         MulticastSocket s = new MulticastSocket(port);
 
-        s.joinGroup(new InetSocketAddress(mcastaddr, 0), netIf);
+        s.joinGroup(new InetSocketAddress(mcastaddr, port), netIf);
         byte[] msgBytes = message.getBytes(StandardCharsets.UTF_8);
         DatagramPacket hi = new DatagramPacket(msgBytes, msgBytes.length, group);
         s.send(hi);
-        // get their responses!
-        byte[] buf = new byte[1000];
-        DatagramPacket recv = new DatagramPacket(buf, buf.length);
-        s.receive(recv);
-        // OK, I'm done talking - leave the group...
-        s.leaveGroup(group, netIf);
     }
     public void startThread() {
         (new Thread(this)).start();

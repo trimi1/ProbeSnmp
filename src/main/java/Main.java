@@ -26,7 +26,7 @@ public class Main {
 
 
         ConfigReader configReader = new ConfigReader("..\\ProbeSnmp\\src\\main\\java\\ressources\\configProbes.json");
-        var MulticastSending = new MulticastSender(configReader.getMulticastAddress(), configReader.getMulticastPort(), configReader.getMulticastInterface(), configReader.getProtocol());
+        var MulticastSending = new MulticastSender(configReader.getMulticastAddress(), configReader.getUnicastPort(), configReader.getMulticastInterface(), configReader.getProtocol());
         var scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutor.scheduleAtFixedRate(MulticastSending, 0, 5, TimeUnit.SECONDS);
         System.out.println("MulticastSender started");

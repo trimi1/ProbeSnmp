@@ -1,7 +1,8 @@
 import be.helmo.reseau.builder.Builder;
+
 import be.helmo.reseau.dataparser.DataParser;
 import snmpversions.*;
-import thread.ProbeThread;
+import thread.MulticastSender;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,9 +31,10 @@ public class Main {
 
 
         ConfigReader configReader = new ConfigReader("..\\ProbeSnmp\\src\\main\\java\\ressources\\configProbes.json");
-        var MulticastSending = new ProbeThread(configReader.getMulticastAddress(), configReader.getMulticastPort(), configReader.getMulticastInterface());
+        var MulticastSending = new MulticastSender(configReader.getMulticastAddress(), configReader.getUnicastPort(), configReader.getMulticastInterface(), configReader.getProtocol());
         var scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutor.scheduleAtFixedRate(MulticastSending, 0, 5, TimeUnit.SECONDS);
+        System.out.println("MulticastSender started");
 
         //1) SIMULATION DU M.D. qui envoie la config via "SETUP frequency 0*100(sp augmented_url)"
         // A chaque "PROBE <PROTOCLE> <PORT>" reçu par la Probe (90s) -> config envoyé par M.D.

@@ -15,46 +15,46 @@ import java.util.regex.Pattern;
 
 public class UnicastReceiver implements Runnable {
 
-    private DatagramSocket socket;
-    private List<String> augmentedUrl = new ArrayList<>();
-    private int frequency;
+   private DatagramSocket socket;
+   private List<String> augmentedUrl = new ArrayList<>();
+   private int frequency;
 
-    public UnicastReceiver(DatagramSocket socket) {
-        this.socket = socket;
-        startThread();
-    }
+   public UnicastReceiver(DatagramSocket socket) {
+       this.socket = socket;
+       startThread();
+   }
 
-    public void run() {
-        byte[] buffer = new byte[1024];
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-        try {
-            while (true) {
-                socket.receive(packet);
-                String received = new String(packet.getData(), 0, packet.getLength());
+   public void run() {
+       byte[] buffer = new byte[1024];
+       DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+       try {
+           while (true) {
+               socket.receive(packet);
+               String received = new String(packet.getData(), 0, packet.getLength());
 
-                IAnalyzer analyzer = new Analyzer();
-                String regexMessage = analyzer.giveMessageConstruction(received);
-                Pattern pattern = Pattern.compile(regexMessage);
-                Matcher matcher = pattern.matcher(received);
-                if(matcher.find()) {
-                    frequency = Integer.parseInt(matcher.group(1));
-                    while (matcher.find()) {
-                        String urlsGroup = matcher.group(2);
-                        List<String> augmentedUrl = Arrays.asList(urlsGroup.split(Analyzer.SP_REGEX));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            // Fermez le socket ou effectuez d'autres opérations de nettoyage si nécessaire
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
-            }
-        }
-    }
+               IAnalyzer analyzer = new Analyzer();
+               //String regexMessage = analyzer.giveMessageConstruction(received);
+               Pattern pattern = Pattern.compile(regexMessage);
+               Matcher matcher = pattern.matcher(received);
+               if(matcher.find()) {
+                   frequency = Integer.parseInt(matcher.group(1));
+                   while (matcher.find()) {
+                       String urlsGroup = matcher.group(2);
+                       List<String> augmentedUrl = Arrays.asList(urlsGroup.split(Analyzer.SP_REGEX));
+                   }
+               }
+           }
+       } catch (Exception e) {
+           e.printStackTrace();
+       } finally {
+           // Fermez le socket ou effectuez d'autres opérations de nettoyage si nécessaire
+           if (socket != null && !socket.isClosed()) {
+               socket.close();
+           }
+       }
+   }
 
-    public void startThread() {
-        (new Thread(this)).start();
-    }
+   public void startThread() {
+       (new Thread(this)).start();
+   }
 }

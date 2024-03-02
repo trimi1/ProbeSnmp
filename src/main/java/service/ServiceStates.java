@@ -1,3 +1,5 @@
+package service;
+
 public enum ServiceStates {
     OK,
     ALARM,

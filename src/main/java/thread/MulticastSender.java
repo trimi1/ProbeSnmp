@@ -13,13 +13,13 @@ import java.nio.file.Paths;
 
 
 public class MulticastSender implements Runnable{
-
     private Thread probeThread;
     private int multicastPort;
     private String multicastAdress;
     private String multicastInterface;
     private int uniCastPort;
     private String protocol;
+
     public MulticastSender(String multicastAddress, int multicastPort, String multicastInterface, String protocol, int uniCastPort) {
         this.multicastAdress = multicastAddress;
         this.multicastPort = multicastPort;
@@ -28,25 +28,20 @@ public class MulticastSender implements Runnable{
         this.protocol = protocol;
         startThread();
     }
+
+    @Override
     public void run() {
-        try {
-            sendProbeMessage(protocol, uniCastPort);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        while (true) {
+            try {
+                sendProbeMessage(protocol, uniCastPort);
+                Thread.sleep(5000); // Pause for 5 seconds
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     synchronized private void sendProbeMessage(String Protocol, int port) throws IOException {
-        /*IBuilder builder = new Builder();
-        String message = builder.buildProbe(Protocol, port);
-        byte[] bytes = message.getBytes();
-        try (MulticastSocket socket = new MulticastSocket()) {
-            InetAddress group = InetAddress.getByName(multicastAdress);
-            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, group, multicastPort);
-            socket.send(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         IBuilder builder = new Builder();
         String message = builder.buildProbe(Protocol, port);
         InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
@@ -61,18 +56,6 @@ public class MulticastSender implements Runnable{
     }
 
     public void sendDataMessage(String Protocol, int port) throws IOException {
-        /*IBuilder builder = new Builder();
-        String message = builder.buildProbe(Protocol, port);
-        byte[] bytes = message.getBytes();
-        try (MulticastSocket socket = new MulticastSocket()) {
-            InetAddress group = InetAddress.getByName(multicastAdress);
-            NetworkInterface networkInterface = NetworkInterface.getByName("ethernet_32776");
-            socket.setNetworkInterface(networkInterface);
-            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, group, multicastPort);
-            socket.send(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         IBuilder builder = new Builder();
         String message = builder.buildProbe(Protocol, port);
         InetAddress mcastaddr = InetAddress.getByName(multicastAdress);

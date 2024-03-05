@@ -13,16 +13,12 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        // Lecture du fichier de configuration
-        Configuration config = ConfigReader.getConfig(args[0]);
+        Configuration config = ConfigReader.getConfig(args[0]);// Lecture du fichier de configuration
 
-        var MulticastSending = new MulticastSender(config.multicastAddress(), config.multicastPort(), config.multicastInterface(), config.protocol(), config.unicastPort());
-        var scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutor.scheduleAtFixedRate(MulticastSending, 0, 5, TimeUnit.SECONDS);
+        var MulticastSending = new MulticastSender(config.multicastAddress(), config.multicastPort(), config.multicastInterface(), config.protocol(), config.unicastPort());//Lancement du thread qui envoie PROBE ou DATA
 
         //1) SIMULATION DU M.D. qui envoie la config via "SETUP frequency 0*100(sp augmented_url)"
-        // A chaque "PROBE <PROTOCLE> <PORT>" reçu par la Probe (90s) -> config envoyé par M.D.
-        // Il faut un thread qui receptionne la config envoyé par le M.D.
+        // A chaque "PROBE <PROTOCLE> <PORT>" envoyer par la Probe (90s) -> config envoyé par M.D. ||||||| Il faut un thread qui receptionne la config envoyé par le M.D.
         Builder builder = new Builder();
         String monitorSimulatedSetup = builder.buildSetup(120,
                 List.of("snmp1!snmp://superswila:TeamG0D$wila#iLikeGodSWILA2024@v3.swi.la:6161/1.3.6.1.4.1.2021.4.11.0!10000!99999999",

@@ -1,11 +1,8 @@
 package service;
 
-import snmpversions.SNMPv2;
-import snmpversions.SNMPv3;
+public class ServiceChecker {
 
-public class ServiceManager {
-
-    public ServiceManager() {
+    public ServiceChecker() {
     }
 
     //checker si on a affaire à un service snmpv2 ou v3 (checker pour le "#" dasn url qui correspond à snmpv3)

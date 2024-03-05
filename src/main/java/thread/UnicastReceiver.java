@@ -47,7 +47,6 @@ public class UnicastReceiver implements Runnable {
        } catch (Exception e) {
            e.printStackTrace();
        } finally {
-           // Fermez le socket ou effectuez d'autres opérations de nettoyage si nécessaire
            if (socket != null && !socket.isClosed()) {
                socket.close();
            }

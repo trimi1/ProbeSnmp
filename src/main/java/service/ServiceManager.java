@@ -4,6 +4,10 @@ import snmpversions.SNMPv2;
 import snmpversions.SNMPv3;
 
 public class ServiceManager {
+
+    public ServiceManager() {
+    }
+
     //checker si on a affaire à un service snmpv2 ou v3 (checker pour le "#" dasn url qui correspond à snmpv3)
     private boolean isVersionSnmpThree(Service service){
         return service.url().contains("#");
@@ -22,38 +26,42 @@ public class ServiceManager {
             }
      */
     private boolean checkThreshold(Service service, String value){
-        if (value != null){
-            if (Integer.parseInt(value) > service.max()){
-                return true;
-            } else if (Integer.parseInt(value) < service.min()){
-                return true;
-            } else {
-                return false;
-            }
-        }
+//        if (value != null){
+//            if (Integer.parseInt(value) > service.max()){
+//                return true;
+//            } else if (Integer.parseInt(value) < service.min()){
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        }
         return false;
     }
 
     public String checkStatusService(Service service) {
-        if (isVersionSnmpThree(service)){
-            SNMPv3 snmpv3 = new SNMPv3(true);
-            String value = snmpv3.getValue(service.url().split(":")[1], service.url().split(":")[2].split("#")[0], service.url().split(":")[2].split("#")[1], service.securityName(), service.authPassphrase(), service.privPassphrase(), service.oid());
-            if (checkThreshold(service, value)){
-                return "ALARM";
-            } else {
-                return "OK";
-            }
-        } else {
-            SNMPv2 snmpv2 = new SNMPv2();
-            String value = snmpv2.getValue(service.url().split(":")[1], Integer.parseInt(service.url().split(":")[2].split("/")[0]), service.url().split(":")[1], service.id());
-            if (checkThreshold(service, value)){
-                return "ALARM";
-            } else {
-                return "OK";
-            }
-        }
+//        if (isVersionSnmpThree(service)){
+//            SNMPv3 snmpv3 = new SNMPv3(true);
+//            String value = snmpv3.getValue(
+//            if (checkThreshold(service, value)){
+//                return "ALARM";
+//            } else {
+//                return "OK";
+//            }
+//        } else {
+//            SNMPv2 snmpv2 = new SNMPv2();
+//            String value = snmpv2.getValue(
+//            if (checkThreshold(service, value)){
+//                return "ALARM";
+//            } else {
+//                return "OK";
+//            }
+//        }
+        return "OK";
     }
 /*
+        snmp1!snmp://superswila:TeamG0D$wila#iLikeGodSWILA2024@v3.swi.la:6161/1.3.6.1.4.1.2021.4.11.0!10000!99999999
+        snmp2!snmp://1amMemb3r0fTe4mSWILA@trkr.swilabus.com:161/1.3.6.1.4.1.2021.11.11.0!10!99999999
+
         // PAS SUPPRIMER ! ON DEVRA UTILISER .getValue POUR AVOIR LA VALEUR (CPU ou mémoire)
         SNMPv2 snmpv2test = new SNMPv2();
         String valueSNMPv2 = snmpv2test.getValue("trkr.swilabus.com", 161, "1amMemb3r0fTe4mSWILA", "1.3.6.1.4.1.2021.11.11.0");

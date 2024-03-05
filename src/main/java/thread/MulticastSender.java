@@ -34,7 +34,7 @@ public class MulticastSender implements Runnable{
         while (true) {
             try {
                 sendProbeMessage(protocol, uniCastPort);
-                Thread.sleep(5000); // Pause for 5 seconds
+                Thread.sleep(5000);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }

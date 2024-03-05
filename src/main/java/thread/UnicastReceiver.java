@@ -33,7 +33,7 @@ public class UnicastReceiver implements Runnable {
                String received = new String(packet.getData(), 0, packet.getLength());
 
                IAnalyzer analyzer = new Analyzer();
-               //String regexMessage = analyzer.giveMessageConstruction(received);
+               String regexMessage = analyzer.giveMessageConstruction(received);
                Pattern pattern = Pattern.compile(regexMessage);
                Matcher matcher = pattern.matcher(received);
                if(matcher.find()) {

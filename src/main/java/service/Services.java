@@ -18,6 +18,10 @@ public class Services {
         return services.get(id);
     }
 
+    public int getFrequency() {
+        return frequency;
+    }
+
     public void setFrequency(int frequency) {
         this.frequency = frequency;
     }

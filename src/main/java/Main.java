@@ -4,6 +4,7 @@ import config.ConfigReader;
 import config.Configuration;
 import service.*;
 import service.ServiceCheckerThread;
+import thread.MulticastSender;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,10 +14,12 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Configuration config = ConfigReader.getConfig(args[0]);// Lecture du fichier de configuration
 
-        //var MulticastSending = new MulticastSender(config.multicastAddress(), config.multicastDelay(), config.multicastPort(), config.multicastInterface(), config.protocol(), config.unicastPort());//Lancement du thread qui envoie uniquement PROBE
+        //Lancement du thread qui envoie uniquement PROBE
+        var MulticastSending = new MulticastSender(config.multicastAddress(), config.multicastDelay(), config.multicastPort(), config.multicastInterface(), config.protocol(), config.unicastPort());
 
         //1) SIMULATION DU M.D. qui envoie la config via "SETUP frequency 0*100(sp augmented_url)"
-        // A chaque "PROBE <PROTOCLE> <PORT>" envoyer par la Probe (90s) -> config envoyé par M.D. ||||||| Il faut un thread qui receptionne la config envoyé par le M.D.
+        // A chaque "PROBE <PROTOCLE> <PORT>" envoyer par la Probe (90s) -> config envoyé par M.D.
+        // il faut un Thread (UnicastReceiver) qui receptionne la config envoyé par le M.D.
         Builder builder = new Builder();
         String monitorSimulatedSetup = builder.buildSetup(120,
                 List.of("snmp1!snmp://superswila:TeamG0D$wila#iLikeGodSWILA2024@v3.swi.la:6161/1.3.6.1.4.1.2021.4.11.0!10000!99999999",
@@ -24,6 +27,7 @@ public class Main {
         int frequency = 120;
 
         //2) réception de la config (frenquency et AURLs)
+        // dans le Thread (UnicastReceiver) concerné : il faudra dans un foreach, pour chaque aurl, créer un service et l'ajouter à la liste des services
         Services services = new Services(new HashMap<>());
         services.setFrequency(frequency);
         Service serviceSNMPv3 = new Service("snmp://superswila:TeamG0D$wila#iLikeGodSWILA2024@v3.swi.la:6161/1.3.6.1.4.1.2021.4.11.0", "1.3.6.1.4.1.2021.4.11.0",10000, 99999999);
@@ -37,11 +41,12 @@ public class Main {
         //ServiceManager serviceManager = new ServiceManager();
         //ServiceStates testState = serviceManager.checkStatusService(service);
         //System.out.println("STATE : "+testState);
+
         //5) SIMULATION M.D. : M.D. qui reçois cette notification, se connecte à la sonde
         //-> M.D. récupère les différents états en utilisant "statusof = "STATUSOF" sp id crlf "
 
 
-
+        //////////////////////////// TESTS ////////////////////////////
 /*        //test 1 : échoué
         String aurl = "snmp://superswila:TeamG0D$wila#iLikeGodSWILA2024@v3.swi.la:6161/1.3.6.1.4.1.2021.4.11.0!10000!99999999";
             //Y'a un probleme chiant avec l'aurl qui ne match pas avec le regex AUGMENTED_URL_REGEX, donc peut faudra revoir AUGMENTED_URL_REGEX

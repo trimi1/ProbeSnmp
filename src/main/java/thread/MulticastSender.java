@@ -37,22 +37,14 @@ public class MulticastSender implements Runnable{
     }
 
     synchronized private void sendProbeMessage(String Protocol, int port) throws IOException {
-        /*IBuilder builder = new Builder();
-        String message = builder.buildProbe(Protocol, port);
-        byte[] bytes = message.getBytes();
-        try (MulticastSocket socket = new MulticastSocket()) {
-            InetAddress group = InetAddress.getByName(multicastAdress);
-            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, group, multicastPort);
-            socket.send(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         IBuilder builder = new Builder();
         String message = builder.buildProbe(Protocol, port);
         InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
         InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);
         NetworkInterface netIf = NetworkInterface.getByName(multicastInterface);
+        System.out.printf("Interface: %s\n", multicastInterface);
         MulticastSocket s = new MulticastSocket(multicastPort);
+        s.setNetworkInterface(netIf);
 
         s.joinGroup(new InetSocketAddress(mcastaddr, 0), netIf);
         byte[] msgBytes = message.getBytes(StandardCharsets.UTF_8);
@@ -61,18 +53,6 @@ public class MulticastSender implements Runnable{
     }
 
     public void sendDataMessage(String Protocol, int port) throws IOException {
-        /*IBuilder builder = new Builder();
-        String message = builder.buildProbe(Protocol, port);
-        byte[] bytes = message.getBytes();
-        try (MulticastSocket socket = new MulticastSocket()) {
-            InetAddress group = InetAddress.getByName(multicastAdress);
-            NetworkInterface networkInterface = NetworkInterface.getByName("ethernet_32776");
-            socket.setNetworkInterface(networkInterface);
-            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, group, multicastPort);
-            socket.send(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         IBuilder builder = new Builder();
         String message = builder.buildProbe(Protocol, port);
         InetAddress mcastaddr = InetAddress.getByName(multicastAdress);

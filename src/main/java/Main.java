@@ -24,11 +24,6 @@ public class Main {
 //        System.out.println("IIIIIIIIIICIIIIIIIIII v3 :" + valueSNMPv3 +"\n");
 
 
-//        String content = new String(Files.readAllBytes(Paths.get("configProbes.json")));
-//        JSONObject json = new JSONObject(content);
-//        int multicastDelay = json.getInt("multicastDelay");
-
-
         ConfigReader configReader = new ConfigReader("..\\ProbeSnmp\\src\\main\\java\\ressources\\configProbes.json");
         var MulticastSending = new MulticastSender(configReader.getMulticastAddress(), configReader.getMulticastPort(), configReader.getMulticastInterface(), configReader.getProtocol(), configReader.getUnicastPort());
         var scheduledExecutor = Executors.newSingleThreadScheduledExecutor();

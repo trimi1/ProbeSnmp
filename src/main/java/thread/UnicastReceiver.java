@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static be.helmo.reseau.analyzer.Analyzer.SETUP_REGEX;
+
 public class UnicastReceiver implements Runnable {
 
     private DatagramSocket socket;
@@ -36,12 +38,24 @@ public class UnicastReceiver implements Runnable {
                 String regexMessage = analyzer.giveMessageConstruction(received);
                 Pattern pattern = Pattern.compile(regexMessage);
                 Matcher matcher = pattern.matcher(received);
-                if(matcher.find()) {
-                    frequency = Integer.parseInt(matcher.group(1));
-                    while (matcher.find()) {
-                        String urlsGroup = matcher.group(2);
-                        List<String> augmentedUrl = Arrays.asList(urlsGroup.split(Analyzer.SP_REGEX));
+                if(pattern.equals(Pattern.compile(Analyzer.STATUSOF_REGEX))) {
+                    if (matcher.find()) {
+                        frequency = Integer.parseInt(matcher.group(1));
+                        while (matcher.find()) {
+                            String urlsGroup = matcher.group(2);
+                            List<String> augmentedUrl = Arrays.asList(urlsGroup.split(Analyzer.SP_REGEX));
+                        }
                     }
+                }else if(pattern.equals(Pattern.compile(Analyzer.STATUSOF_REGEX))) {
+                    if (matcher.find()) {
+                        int id = Integer.parseInt(matcher.group(1));
+
+                    }
+
+                }else if(pattern.equals(Pattern.compile(Analyzer.STATUSOF_REGEX))){
+
+                }else {
+
                 }
             }
         } catch (Exception e) {
@@ -51,6 +65,17 @@ public class UnicastReceiver implements Runnable {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
             }
+        }
+
+    }
+    public void responseStatusOf(){
+        IBuilder builder = new Builder();
+        String message = builder.buildStatusOf(1);
+        byte[] bytes = message.getBytes();
+        try {
+            socket.send(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

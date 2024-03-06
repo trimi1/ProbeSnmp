@@ -25,4 +25,8 @@ public class Services {
     public void setFrequency(int frequency) {
         this.frequency = frequency;
     }
+
+    public Map<String, Service> getServices() {
+        return services;
+    }
 }

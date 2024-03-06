@@ -29,6 +29,11 @@ public class UnicastReceiverTrimi implements Runnable {
             socket.receive(packet);
             String message = new String(buffer);
             System.out.println(message);//faudra recuperer la frequence et les AURLs pour les stocker dans Services
+            if (message.matches(Analyzer.SETUP_REGEX)) {
+                addServicesAndFrequency(message);
+            } else if (message.matches(Analyzer.STATUSOF_REGEX)) {
+                //statusof : demander l'état d'un service et envoyer via unicast
+            }
             socket.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,6 +43,12 @@ public class UnicastReceiverTrimi implements Runnable {
             }
         }
     }
+
+    //received SETUP : Stocker frequence et les AURLs dans Services
+    private void addServicesAndFrequency(String message) {
+        //foreach Services services.addService(aurl, service);
+    }
+
 
     public void startThread() {
         (new Thread(this)).start();

@@ -36,7 +36,7 @@ public class MulticastSender implements Runnable{
         while (true) {
             try {
                 sendProbeMessage();
-                Thread.sleep(multicastDelay);
+                Thread.sleep(multicastDelay*1000L);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
@@ -59,13 +59,13 @@ public class MulticastSender implements Runnable{
 
     public void sendDataMessage() throws IOException {
         IBuilder builder = new Builder();
-        String message = builder.buildProbe(protocol, uniCastPort);
+        String message = builder.buildData(protocol, uniCastPort);
         InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
         InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);
         NetworkInterface netIf = NetworkInterface.getByName(multicastInterface);
         MulticastSocket s = new MulticastSocket(multicastPort);
 
-        s.joinGroup(new InetSocketAddress(mcastaddr, uniCastPort), netIf);
+        s.joinGroup(new InetSocketAddress(mcastaddr, 0), netIf);
         byte[] msgBytes = message.getBytes(StandardCharsets.UTF_8);
         DatagramPacket hi = new DatagramPacket(msgBytes, msgBytes.length, group);
         s.send(hi);

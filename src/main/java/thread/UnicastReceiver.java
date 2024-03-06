@@ -72,6 +72,7 @@ public class UnicastReceiver implements Runnable {
         IBuilder builder = new Builder();
         String message = builder.buildStatusOf(1);
         byte[] bytes = message.getBytes();
+        DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
         try {
             socket.send(packet);
         } catch (IOException e) {

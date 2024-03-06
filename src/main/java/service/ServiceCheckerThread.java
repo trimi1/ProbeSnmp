@@ -13,8 +13,9 @@ public class ServiceCheckerThread implements Runnable {
     //private Thread thread;
     private ServiceManager serviceManager;
 
-    public ServiceCheckerThread(Services services) {
+    public ServiceCheckerThread(Services services, MulticastSender multicastSender) {
         this.services = services;
+        this.multicastSender = multicastSender;
         this.serviceManager = new ServiceManager();
         startThread();
     }
@@ -22,21 +23,20 @@ public class ServiceCheckerThread implements Runnable {
     @Override
     public void run() {
         while (true) {
-            services.getServices().forEach((id, service) -> {
-                ServiceStates oldStatus = service.getState();
-                ServiceStates newStatus = serviceManager.checkStatusService(service);
-
-                if (!oldStatus.equals(newStatus)) {
-                    try {
-                        multicastSender.sendDataMessage();
-                        System.out.println("**MESSAGE DATA HAS BEEN SENT");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
             try {
+                services.getServices().forEach((id, service) -> {
+                    ServiceStates oldStatus = service.getState();
+                    ServiceStates newStatus = serviceManager.checkStatusService(service);
+
+                    if (!oldStatus.equals(newStatus)) {
+                        try {
+                            multicastSender.sendDataMessage();
+                            System.out.println("**MESSAGE DATA HAS BEEN SENT");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
                 Thread.sleep(services.getFrequency() * 1000L);
             } catch (InterruptedException e) {
                 e.printStackTrace();

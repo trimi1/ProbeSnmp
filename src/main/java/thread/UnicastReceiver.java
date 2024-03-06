@@ -26,13 +26,15 @@ public class UnicastReceiver implements Runnable {
             byte[] buffer = new byte[MAX_LEN];
             DatagramPacket packet = new DatagramPacket(buffer, MAX_LEN);
             socket.receive(packet);
-            String message = new String(buffer);
-            System.out.println(message);//faudra recuperer la frequence et les AURLs pour les stocker dans Services
+            String message = new String(buffer).trim();
+            System.out.println("**UnicastReceiver : MESSAGE RECEIVED: \n" + message);
+            addServicesAndFrequency(message);
             if (message.matches(Analyzer.SETUP_REGEX)) {
                 addServicesAndFrequency(message);
             } else if (message.matches(Analyzer.STATUSOF_REGEX)) {
                 statusSender(message);
             }
+
             socket.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,12 +49,17 @@ public class UnicastReceiver implements Runnable {
     private void addServicesAndFrequency(String message) {
         //foreach Services services.addService(aurl, service);
         // pour tout les aurl qui message.matches(Analyzer.AUGMENTED_URL_REGEX);, créer un service et l'ajouter à la liste des services
-        Matcher matcher = Pattern.compile(Analyzer.AUGMENTED_URL_REGEX).matcher(message);
-        if (matcher.find()) {
-            String frequency = matcher.group("frequency");
-            String augmentedUrls = matcher.group("augmentedUrls");
+        //REGLER LES SOUCIS DE REGEX POUR QUE CA MATCH + du coup les matcher.group("truc")
+        Matcher matcherId = Pattern.compile(Analyzer.SETUP_REGEX).matcher(message);
+        String frequency = matcherId.group("frequency");
+        System.out.println(frequency);
+        String augmentedUrls = matcherId.group("augmentedUrls");
+        System.out.println(augmentedUrls);
 
-        }
+
+//        Matcher matcherAugmentedUrl = Pattern.compile(Analyzer.AUGMENTED_URL_REGEX).matcher(message);
+//        String frequency = matcherAugmentedUrl.group("frequency");
+//        String augmentedUrls = matcherAugmentedUrl.group("augmentedUrls");
     }
 
     //received STATUSOF : Probe envoye STATUS via unicast après avoir reçu STATUSOF
@@ -68,7 +75,6 @@ public class UnicastReceiver implements Runnable {
         }
         unicastSender.sendUnicast(status, "60000", unicastPort);
     }
-
 
     public void startThread() {
         (new Thread(this)).start();

@@ -54,7 +54,7 @@ public class Main {
 
         //3) PROBE supervise/interroge les services et en capture les états (elle garde en mémoire l'état du service.)
         //4) changement d'un ETAT ? PROBE notifie par multicast le M.D. des changements d'états (DATA <PROTOCOLE> <PORT>)
-        var serviceChecker = new ServiceCheckerThread(services);
+        var serviceChecker = new ServiceCheckerThread(services, MulticastSending);
         //ServiceManager serviceManager = new ServiceManager();
         //ServiceStates testState = serviceManager.checkStatusService(service);
         //System.out.println("STATE : "+testState);

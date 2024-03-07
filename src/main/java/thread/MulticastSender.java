@@ -1,7 +1,6 @@
 package thread;
 
 import be.helmo.reseau.builder.Builder;
-import be.helmo.reseau.interfaces.IBuilder;
 
 import java.io.IOException;
 import java.net.*;
@@ -38,7 +37,7 @@ public class MulticastSender implements Runnable{
     }
     //synchronized private void sendProbeMessage(String Protocol, int port) throws IOException {
     synchronized private void sendProbeMessage() throws IOException {
-        IBuilder builder = new Builder();
+        Builder builder = new Builder();
         String message = builder.buildProbe(protocol, uniCastPort);
         InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
         InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);
@@ -54,7 +53,7 @@ public class MulticastSender implements Runnable{
     }
     //public void sendDataMessage(String Protocol, int port) throws IOException {
     public void sendDataMessage() throws IOException {
-        IBuilder builder = new Builder();
+        Builder builder = new Builder();
         String message = builder.buildData(protocol, uniCastPort);
         InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
         InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);

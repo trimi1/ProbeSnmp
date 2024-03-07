@@ -1,7 +1,6 @@
 package thread;
 
 import be.helmo.reseau.builder.Builder;
-import be.helmo.reseau.interfaces.IBuilder;
 
 import java.io.IOException;
 import java.net.*;

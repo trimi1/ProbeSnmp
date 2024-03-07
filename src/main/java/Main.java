@@ -68,7 +68,7 @@ public class Main {
 
         //5) SIMULATION M.D. : M.D. qui reçois cette notification, se connecte à la sonde
         //-> M.D. récupère les différents états en utilisant "statusof = "STATUSOF" sp id crlf "
-
+        var UnicastReceiver = new UnicastReceiver(config.unicastPort());
 
         //////////////////////////// TESTS ////////////////////////////
         //test 1 : réussi (correction des regex)

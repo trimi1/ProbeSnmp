@@ -3,7 +3,6 @@ package thread;
 import be.helmo.reseau.analyzer.Analyzer;
 import be.helmo.reseau.builder.Builder;
 import be.helmo.reseau.interfaces.IAnalyzer;
-import be.helmo.reseau.interfaces.IBuilder;
 import service.Service;
 import service.ServiceStates;
 import service.Services;
@@ -39,7 +38,7 @@ public class UnicastReceiver implements Runnable {
         }
     }
     private void analyzeMessage(String message,PrintWriter writerToMonitor) {
-        IAnalyzer analyzer = new Analyzer();
+        IAnalyzer analyzer = Analyzer.getInstance();
         String regexMessage = analyzer.giveMessageConstruction(message);
         Pattern pattern = Pattern.compile(regexMessage);
         Matcher matcher = pattern.matcher(message);
@@ -77,8 +76,7 @@ public class UnicastReceiver implements Runnable {
         }
     }
     private void sendStatusRespond(String id,ServiceStates states, PrintWriter writerToMonitor) {
-        IBuilder builder = new Builder();
-        String message = builder.buildStatus(id, states.toString());
+        String message = Builder.buildStatus(id, states.toString());
         writerToMonitor.write(message);
         writerToMonitor.flush();
     }

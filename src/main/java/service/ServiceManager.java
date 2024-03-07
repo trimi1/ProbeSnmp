@@ -67,7 +67,7 @@ public class ServiceManager {
         String username = null;
 
         SNMPv2 snmpv2 = new SNMPv2();
-        IAnalyzer analyzer = new Analyzer();
+        IAnalyzer analyzer = Analyzer.getInstance();
         String regexMessage = analyzer.giveMessageConstruction(url);
         Pattern pattern = Pattern.compile(regexMessage);
         Matcher matcher = pattern.matcher(url);
@@ -89,7 +89,7 @@ public class ServiceManager {
         String authentificateur = null;
 
         SNMPv3 snmpv3 = new SNMPv3(true);
-        IAnalyzer analyzer = new Analyzer();
+        IAnalyzer analyzer = Analyzer.getInstance();
         String regexMessage = analyzer.giveMessageConstruction(url);
         Pattern pattern = Pattern.compile(regexMessage);
         Matcher matcher = pattern.matcher(url);

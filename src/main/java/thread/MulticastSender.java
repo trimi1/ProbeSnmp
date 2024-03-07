@@ -38,8 +38,7 @@ public class MulticastSender implements Runnable{
     }
     //synchronized private void sendProbeMessage(String Protocol, int port) throws IOException {
     synchronized private void sendProbeMessage() throws IOException {
-        IBuilder builder = new Builder();
-        String message = builder.buildProbe(protocol, uniCastPort);
+        String message = Builder.buildProbe(protocol, uniCastPort);
         InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
         InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);
         NetworkInterface netIf = NetworkInterface.getByName(multicastInterface);
@@ -54,8 +53,7 @@ public class MulticastSender implements Runnable{
     }
     //public void sendDataMessage(String Protocol, int port) throws IOException {
     public void sendDataMessage() throws IOException {
-        IBuilder builder = new Builder();
-        String message = builder.buildData(protocol, uniCastPort);
+        String message = Builder.buildData(protocol, uniCastPort);
         InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
         InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);
         NetworkInterface netIf = NetworkInterface.getByName(multicastInterface);

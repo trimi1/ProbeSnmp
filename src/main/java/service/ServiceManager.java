@@ -3,9 +3,7 @@ package service;
 import snmpversions.SNMPv2;
 import snmpversions.SNMPv3;
 import be.helmo.reseau.analyzer.Analyzer;
-import be.helmo.reseau.builder.Builder;
 import be.helmo.reseau.interfaces.IAnalyzer;
-import be.helmo.reseau.interfaces.IBuilder;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,17 +19,10 @@ public class ServiceManager {
         String value = null;
         if (isVersionSnmpThree(service)){
             SNMPv3 snmpv3 = new SNMPv3(true);
-            //matcher avec Service.url() pour récupérer les valeurs :
-//            IAnalyzer analyzer = new Analyzer();
-//            String regexMessageUrl = analyzer.giveMessageConstruction(service.url());
-//            Matcher matcher = Pattern.compile(regexMessageUrl).matcher(service.url());
-//            String value = snmpv3.getValue(matcher.group("host"), Integer.parseInt(matcher.group("port")), matcher.group("username"), matcher.group("password"), matcher.group("auth"), matcher.group("path"));
-            value = snmpv3.getValue("v3.swi.la", 6161, "superswila", "iLikeGodSWILA2024", "TeamG0D$wila", service.oid());
-            // A REMPLACER PAR : value = snmpv3.getValue(matcher.group("host"), Integer.parseInt(matcher.group("port")), ... service.oid());
+            value = getValueSNMP3(service.url());
         } else {
             SNMPv2 snmpv2 = new SNMPv2();
-            value = snmpv2.getValue("trkr.swilabus.com", 161, "1amMemb3r0fTe4mSWILA", service.oid());
-            // A REMPLACER PAR : value = snmpv2.getValue(matcher.group("host"), Integer.parseInt(matcher.group("port")), ... service.oid());
+            value = getValueSNMP2(service.url());
         }
         return value;
     }
@@ -67,5 +58,49 @@ public class ServiceManager {
 
         service.setState(state);
         return state;
+    }
+
+    private String getValueSNMP2(String url){
+        String host = null;
+        String oid = null;
+        int port = 0;
+        String username = null;
+
+        SNMPv2 snmpv2 = new SNMPv2();
+        IAnalyzer analyzer = new Analyzer();
+        String regexMessage = analyzer.giveMessageConstruction(url);
+        Pattern pattern = Pattern.compile(regexMessage);
+        Matcher matcher = pattern.matcher(url);
+        if(matcher.find()){
+            host = matcher.group("Host");
+            oid = matcher.group("Oid");
+            port = Integer.parseInt(matcher.group("Port"));
+            username = matcher.group("Username");
+        }
+        return snmpv2.getValue(host, port, username, oid);
+    }
+
+    private String getValueSNMP3(String url){
+        String host = null;
+        String oid = null;
+        int port = 0;
+        String password = null;
+        String username = null;
+        String authentificateur = null;
+
+        SNMPv3 snmpv3 = new SNMPv3(true);
+        IAnalyzer analyzer = new Analyzer();
+        String regexMessage = analyzer.giveMessageConstruction(url);
+        Pattern pattern = Pattern.compile(regexMessage);
+        Matcher matcher = pattern.matcher(url);
+        if(matcher.find()){
+            host = matcher.group("Host");
+            oid = matcher.group("Oid");
+            port = Integer.parseInt(matcher.group("Port"));
+            password = matcher.group("Password");
+            username = matcher.group("Username");
+            authentificateur = matcher.group("Auth");
+        }
+        return snmpv3.getValue(host, port, username, authentificateur, password, oid);
     }
 }

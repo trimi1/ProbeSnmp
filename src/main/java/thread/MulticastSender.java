@@ -1,18 +1,13 @@
 package thread;
 
 import be.helmo.reseau.builder.Builder;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 
 public class MulticastSender implements Runnable{
-    private Thread probeThread;
     private int multicastPort;
     private String multicastAdress;
     private String multicastInterface;
@@ -27,7 +22,6 @@ public class MulticastSender implements Runnable{
         this.multicastInterface = multicastInterface;
         this.uniCastPort = uniCastPort;
         this.protocol = protocol;
-        startThread();
     }
 
     @Override
@@ -41,21 +35,23 @@ public class MulticastSender implements Runnable{
             }
         }
     }
-
+    //synchronized private void sendProbeMessage(String Protocol, int port) throws IOException {
     synchronized private void sendProbeMessage() throws IOException {
         Builder builder = new Builder();
         String message = builder.buildProbe(protocol, uniCastPort);
         InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
         InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);
         NetworkInterface netIf = NetworkInterface.getByName(multicastInterface);
+        System.out.printf("Interface: %s\n", multicastInterface);
         MulticastSocket s = new MulticastSocket(multicastPort);
+        s.setNetworkInterface(netIf);
 
         s.joinGroup(new InetSocketAddress(mcastaddr, 0), netIf);
         byte[] msgBytes = message.getBytes(StandardCharsets.UTF_8);
         DatagramPacket hi = new DatagramPacket(msgBytes, msgBytes.length, group);
         s.send(hi);
     }
-
+    //public void sendDataMessage(String Protocol, int port) throws IOException {
     public void sendDataMessage() throws IOException {
         Builder builder = new Builder();
         String message = builder.buildData(protocol, uniCastPort);

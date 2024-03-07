@@ -2,7 +2,7 @@
   "protocol": "snmp",
   "multicastAddress": "224.0.0.254",
   "multicastPort": 60202,
-  "multicastInterface": "ethernet_32768",
+  "multicastInterface": "wireless_32768",
   "multicastDelay": 90,
   "unicastPort": 60000,
   "aesKey": "lWmUyI0UG+3MDttMafeox3f7sGxnzzbBPmvgcdBwF05Y0M9Bf04ifMwuj92Xxj7hO1cuG7j0cHu3Zu9PW0ONDAatit9L83QFgx30fj/zqD0RfeC2nSsVnQNeiMTYMsiloWftNTxx0CrEN+WEPnLh+FauBfhhLcGrdBxgiyN0+liaysIi6foEjG/1n5/C2w2Ox+gsYOWcGn5FvLjkgKgFVN2XMfVQunHJo28H3NnLEb+9GzCxKywYB+FgfESE1JXNbBVL82ZEAnQ22//3VOdwvDPEJ7mM9qlRSgl+lN3PCNGK17fEGgYGaplkRT+iMkf/kKMYMgFPMAxfMAI4O9I0so7oWwdIi5p+xAdX/i9gj6k="

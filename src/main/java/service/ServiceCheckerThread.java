@@ -10,7 +10,6 @@ import java.io.IOException;
 public class ServiceCheckerThread implements Runnable {
     private Services services;
     private MulticastSender multicastSender;
-    //private Thread thread;
     private ServiceManager serviceManager;
 
     public ServiceCheckerThread(Services services, MulticastSender multicastSender) {
@@ -27,7 +26,6 @@ public class ServiceCheckerThread implements Runnable {
                 services.getServices().forEach((id, service) -> {
                     ServiceStates oldStatus = service.getState();
                     ServiceStates newStatus = serviceManager.checkStatusService(service);
-
                     if (!oldStatus.equals(newStatus)) {
                         try {
                             multicastSender.sendDataMessage();

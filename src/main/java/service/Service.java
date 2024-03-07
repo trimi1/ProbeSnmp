@@ -2,14 +2,14 @@ package service;
 
 public class Service{
     String url;
-    private String oid;
+    private String id;
     private int min;
     private int max;
     private ServiceStates state;
 
-    public Service(String url, String oid, int min, int max) {
+    public Service(String url, String id, int min, int max) {
+        this.id = id;
         this.url = url;
-        this.oid = oid;
         this.min = min;
         this.max = max;
         this.state = ServiceStates.UNKNOWN;
@@ -19,8 +19,8 @@ public class Service{
         return url;
     }
 
-    public String oid() {
-        return oid;
+    public String id() {
+        return id;
     }
 
     public int min() {

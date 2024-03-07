@@ -1,14 +1,20 @@
+import be.helmo.reseau.analyzer.Analyzer;
 import be.helmo.reseau.builder.Builder;
 
+import be.helmo.reseau.interfaces.IAnalyzer;
 import config.ConfigReader;
 import config.Configuration;
 import service.*;
 import service.ServiceCheckerThread;
+import snmpversions.SNMPv2;
 import thread.MulticastSender;
+import thread.UnicastReceiver;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -32,8 +38,8 @@ public class Main {
 //        System.out.println("MulticastSender started");
 
         //Lancement du thread qui envoie uniquement PROBE
-        var MulticastSending = new MulticastSender(config.multicastAddress(), config.multicastDelay(), config.multicastPort(), config.multicastInterface(), config.protocol(), config.unicastPort());
-
+        var multicastSending = new MulticastSender(config.multicastAddress(), config.multicastDelay(), config.multicastPort(), config.multicastInterface(), config.protocol(), config.unicastPort());
+        multicastSending.startThread();
         //1) SIMULATION DU M.D. qui envoie la config via "SETUP frequency 0*100(sp augmented_url)"
         // A chaque "PROBE <PROTOCLE> <PORT>" envoyer par la Probe (90s) -> config envoyé par M.D.
         // il faut un Thread (UnicastReceiver) qui receptionne la config envoyé par le M.D.
@@ -45,16 +51,17 @@ public class Main {
 
         //2) réception de la config (frenquency et AURLs)
         // dans le Thread (UnicastReceiver) concerné : il faudra dans un foreach, pour chaque aurl, créer un service et l'ajouter à la liste des services
-        Services services = new Services(new HashMap<>());
-        services.setFrequency(frequency);
-        Service serviceSNMPv3 = new Service("snmp://superswila:TeamG0D$wila#iLikeGodSWILA2024@v3.swi.la:6161/1.3.6.1.4.1.2021.4.11.0", "1.3.6.1.4.1.2021.4.11.0",10000, 99999999);
+        //Services services = new Services(new HashMap<>());
+        Services.setFrequency(frequency);
+        Service serviceSNMPv3 = new Service("snmp1://superswila:TeamG0D$wila#iLikeGodSWILA2024@v3.swi.la:6161/1.3.6.1.4.1.2021.4.11.0", "1.3.6.1.4.1.2021.4.11.0",10000, 99999999);
         Service serviceSNMPv2 = new Service("snmp2!snmp://1amMemb3r0fTe4mSWILA@trkr.swilabus.com:161/1.3.6.1.4.1.2021.11.11.0","1.3.6.1.4.1.2021.11.11.0",10,99999999);
-        services.addService("snmp1", serviceSNMPv3);
-        services.addService("snmp2", serviceSNMPv2);
+        Services.addService("snmp1", serviceSNMPv3);
+        Services.addService("snmp2", serviceSNMPv2);
 
+        UnicastReceiver lecteurNotifMD = new UnicastReceiver(config.unicastPort());
         //3) PROBE supervise/interroge les services et en capture les états (elle garde en mémoire l'état du service.)
         //4) changement d'un ETAT ? PROBE notifie par multicast le M.D. des changements d'états (DATA <PROTOCOLE> <PORT>)
-        var serviceChecker = new ServiceCheckerThread(services, MulticastSending);
+        //var serviceChecker = new ServiceCheckerThread(services, MulticastSending);
         //ServiceManager serviceManager = new ServiceManager();
         //ServiceStates testState = serviceManager.checkStatusService(service);
         //System.out.println("STATE : "+testState);
@@ -64,15 +71,16 @@ public class Main {
 
 
         //////////////////////////// TESTS ////////////////////////////
-/*        //test 1 : échoué
-        String aurl = "snmp://superswila:TeamG0D$wila#iLikeGodSWILA2024@v3.swi.la:6161/1.3.6.1.4.1.2021.4.11.0!10000!99999999";
+        //test 1 : réussi (correction des regex)
+        String aurl = "snmp1!snmp://superswila:TeamG0D$wila#iLikeGodSWILA2024@v3.swi.la:6161/1.3.6.1.4.1.2021.4.11.0!10000!99999999";
             //Y'a un probleme chiant avec l'aurl qui ne match pas avec le regex AUGMENTED_URL_REGEX, donc peut faudra revoir AUGMENTED_URL_REGEX
         if (aurl.matches(Analyzer.AUGMENTED_URL_REGEX)){
             System.out.println("AURL MATCH");
         } else {
             System.out.println("AURL NOT MATCH");
         }
-        // test 2 : Reussi mais uniquement avec le regex URL_REGEX et pas AUGMENTED_URL_REGEX
+
+        /*// test 2 : Reussi mais uniquement avec le regex URL_REGEX et pas AUGMENTED_URL_REGEX
         IAnalyzer analyzer = new Analyzer();
         //String regexMessageUrl = analyzer.giveMessageConstruction(aurl);
         String regexMessageUrl = Analyzer.URL_REGEX;

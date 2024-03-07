@@ -2,18 +2,13 @@ package thread;
 
 import be.helmo.reseau.builder.Builder;
 import be.helmo.reseau.interfaces.IBuilder;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 
 public class MulticastSender implements Runnable{
-    private Thread probeThread;
     private int multicastPort;
     private String multicastAdress;
     private String multicastInterface;
@@ -28,7 +23,6 @@ public class MulticastSender implements Runnable{
         this.multicastInterface = multicastInterface;
         this.uniCastPort = uniCastPort;
         this.protocol = protocol;
-        startThread();
     }
 
     @Override

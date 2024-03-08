@@ -2,40 +2,32 @@ package thread;
 
 import be.helmo.reseau.builder.Builder;
 
+import java.io.PrintWriter;
 import java.net.*;
 import java.util.List;
 
 public class UnicastSender {
     public static void main(String[] args) {
+        System.out.println("UnicastSender started...");
         try {
-            InetAddress receiverHost = InetAddress.getByName("localhost");
-            //int receiverPort = Integer.parseInt(args[1]);
+            String receiverHost = "localhost";
             int receiverPort = 60000;
             //test message
-            String message = Builder.buildSetup(120,
+            String message = Builder.buildSetup(20,
                     List.of("snmp1!snmp://superswila:TeamG0D$wila#iLikeGodSWILA2024@v3.swi.la:6161/1.3.6.1.4.1.2021.4.11.0!10000!99999999",
                             "snmp2!snmp://1amMemb3r0fTe4mSWILA@trkr.swilabus.com:161/1.3.6.1.4.1.2021.11.11.0!10!99999999"));
-
-            DatagramSocket mySocket = new DatagramSocket();
-            byte[] buffer = message.getBytes();
-            DatagramPacket packet = new DatagramPacket (buffer, buffer.length, receiverHost, receiverPort); mySocket.send (packet);
-            mySocket.close();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public void sendUnicast(String message, String receiverHost, int receiverPort) {
-        try {
-            InetAddress receiver = InetAddress.getByName(receiverHost);
-            DatagramSocket mySocket = new DatagramSocket();
-            byte[] buffer = message.getBytes();
-            DatagramPacket packet = new DatagramPacket (buffer, buffer.length, receiver, receiverPort);
-            mySocket.send (packet);
-            mySocket.close();
-        }
-        catch(Exception e){
+            System.out.println("Message to send: " + message);
+            try (Socket socket = new Socket(receiverHost, receiverPort);
+                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+                out.write(message);
+            }
+            String message2 = Builder.buildStatusOf("snmp1");
+            System.out.println("Message to send: " + message);
+            try (Socket socket = new Socket(receiverHost, receiverPort);
+                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+                out.write(message);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

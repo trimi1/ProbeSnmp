@@ -1,7 +1,7 @@
 package service;
 
 public class Service{
-    String url;
+    private String url;
     private String id;
     private int min;
     private int max;

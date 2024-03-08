@@ -7,10 +7,6 @@ public class Services {
     private static Map<String, Service> services = new HashMap<>();
     private static int frequency = 120;
 
-    /*public Services(Map<String, Service> services) {
-        this.services = services;
-    }*/
-
     public static synchronized void addService(String id, Service service) {
         services.put(id, service);
     }
@@ -27,8 +23,7 @@ public class Services {
     public static boolean containsService(String id) {
         return services.containsKey(id);
     }
-
-    public Map<String, Service> getServices() {
-        return services;
+    public static synchronized Map<String, Service> getAllServices() {
+        return new HashMap<>(services);
     }
 }

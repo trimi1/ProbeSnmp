@@ -25,8 +25,8 @@ public class UnicastReceiver implements Runnable {
     public void run() {
         while (true) {
             try(Socket monitorDaemonSocket = socket.accept();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(monitorDaemonSocket.getInputStream()));
-            PrintWriter writerToMonitor = new PrintWriter(monitorDaemonSocket.getOutputStream(), true)) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(monitorDaemonSocket.getInputStream()));
+                PrintWriter writerToMonitor = new PrintWriter(monitorDaemonSocket.getOutputStream(), true)) {
                 System.out.println("Message recu");
                 String received = reader.readLine();
                 if(received != null){
@@ -43,13 +43,13 @@ public class UnicastReceiver implements Runnable {
         Pattern pattern = Pattern.compile(regexMessage);
         Matcher matcher = pattern.matcher(message);
         if(pattern.pattern().equals(Analyzer.SETUP_REGEX) && matcher.find()){
-                int frequency = Integer.parseInt(matcher.group("Frequency"));
-                Services.setFrequency(frequency);
-                String aurlgroup = matcher.group("Aurls");
-                ajoutAurlService(aurlgroup);
+            int frequency = Integer.parseInt(matcher.group("Frequency"));
+            Services.setFrequency(frequency);
+            String aurlgroup = matcher.group("Aurls");
+            ajoutAurlService(aurlgroup);
         }else if(pattern.pattern().equals(Analyzer.STATUSOF_REGEX) && matcher.find()) {
-                String id = matcher.group("Id");
-                sendStatusRespond(id,Services.getService(id).getState(),writerToMonitor);
+            String id = matcher.group("Id");
+            sendStatusRespond(id,Services.getService(id).getState(),writerToMonitor);
         }
     }
     private void ajoutAurlService(String aurl) {

@@ -12,7 +12,7 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    implementation project(':Grammar')
+    implementation files('libs/Grammar.jar')
     implementation 'org.json:json:20231013'
     implementation 'org.snmp4j:snmp4j:3.7.7'
 }

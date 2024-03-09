@@ -22,10 +22,10 @@ public class UnicastSender {
                 out.write(message);
             }
             String message2 = Builder.buildStatusOf("snmp1");
-            System.out.println("Message to send: " + message);
+            System.out.println("Message to send: " + message2);
             try (Socket socket = new Socket(receiverHost, receiverPort);
                  PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
-                out.write(message);
+                out.write(message2);
             }
         } catch (Exception e) {
             e.printStackTrace();

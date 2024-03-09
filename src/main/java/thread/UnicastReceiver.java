@@ -39,17 +39,20 @@ public class UnicastReceiver implements Runnable {
     }
     private void analyzeMessage(String message,PrintWriter writerToMonitor) {
         IAnalyzer analyzer = Analyzer.getInstance();
-        String regexMessage = analyzer.giveMessageConstruction(message);
-        Pattern pattern = Pattern.compile(regexMessage);
-        Matcher matcher = pattern.matcher(message);
-        if(pattern.pattern().equals(Analyzer.SETUP_REGEX) && matcher.find()){
-            int frequency = Integer.parseInt(matcher.group("Frequency"));
-            Services.setFrequency(frequency);
-            String aurlgroup = matcher.group("Aurls");
-            ajoutAurlService(aurlgroup);
-        }else if(pattern.pattern().equals(Analyzer.STATUSOF_REGEX) && matcher.find()) {
-            String id = matcher.group("Id");
-            sendStatusRespond(id,Services.getService(id).getState(),writerToMonitor);
+        var optionalRegex = analyzer.getRegex(message);
+        if (!optionalRegex.isEmpty()) {
+            var regex = optionalRegex.get();
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(message);
+            if (pattern.pattern().equals(Analyzer.SETUP_REGEX) && matcher.find()) {
+                int frequency = Integer.parseInt(matcher.group("Frequency"));
+                Services.setFrequency(frequency);
+                String aurlgroup = matcher.group("Aurls");
+                ajoutAurlService(aurlgroup);
+            } else if (pattern.pattern().equals(Analyzer.STATUSOF_REGEX) && matcher.find()) {
+                String id = matcher.group("Id");
+                sendStatusRespond(id, Services.getService(id).getState(), writerToMonitor);
+            }
         }
     }
     private void ajoutAurlService(String aurl) {

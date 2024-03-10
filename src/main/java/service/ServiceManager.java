@@ -69,7 +69,7 @@ public class ServiceManager {
         SNMPv2 snmpv2 = new SNMPv2();
         IAnalyzer analyzer = Analyzer.getInstance();
         var optionalRegex = analyzer.getRegex(url);
-        if (optionalRegex.isEmpty()) {
+        if (!optionalRegex.isEmpty()) {
             var regex = optionalRegex.get();
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(url);
@@ -94,7 +94,7 @@ public class ServiceManager {
         SNMPv3 snmpv3 = new SNMPv3(true);
         IAnalyzer analyzer = Analyzer.getInstance();
         var optionalRegex = analyzer.getRegex(url);
-        if (optionalRegex.isEmpty()) {
+        if (!optionalRegex.isEmpty()) {
             var regex = optionalRegex.get();
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(url);

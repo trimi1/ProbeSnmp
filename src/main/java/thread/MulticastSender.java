@@ -9,14 +9,14 @@ import java.nio.charset.StandardCharsets;
 
 public class MulticastSender implements Runnable{
     private int multicastPort;
-    private String multicastAdress;
+    private String multicastAddress;
     private String multicastInterface;
     private int uniCastPort;
     private String protocol;
     private int multicastDelay;
 
     public MulticastSender(String multicastAddress, int multicastDelay, int multicastPort, String multicastInterface, String protocol, int uniCastPort) {
-        this.multicastAdress = multicastAddress;
+        this.multicastAddress = multicastAddress;
         this.multicastDelay = multicastDelay;
         this.multicastPort = multicastPort;
         this.multicastInterface = multicastInterface;
@@ -37,7 +37,7 @@ public class MulticastSender implements Runnable{
     }
     synchronized private void sendProbeMessage() throws IOException {
         String message = Builder.buildProbe(protocol, uniCastPort);
-        InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
+        InetAddress mcastaddr = InetAddress.getByName(multicastAddress);
         InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);
         NetworkInterface netIf = NetworkInterface.getByName(multicastInterface);
         MulticastSocket s = new MulticastSocket(multicastPort);
@@ -50,7 +50,7 @@ public class MulticastSender implements Runnable{
     }
     public void sendDataMessage() throws IOException {
         String message = Builder.buildData(protocol, uniCastPort);
-        InetAddress mcastaddr = InetAddress.getByName(multicastAdress);
+        InetAddress mcastaddr = InetAddress.getByName(multicastAddress);
         InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);
         NetworkInterface netIf = NetworkInterface.getByName(multicastInterface);
         MulticastSocket s = new MulticastSocket(multicastPort);

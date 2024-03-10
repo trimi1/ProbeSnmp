@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Services {
     private static Map<String, Service> services = new HashMap<>();
-    private static int frequency = 120;
+    private static int frequency = 30;
 
     public static synchronized void addService(String id, Service service) {
         services.put(id, service);

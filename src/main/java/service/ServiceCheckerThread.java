@@ -22,6 +22,8 @@ public class ServiceCheckerThread implements Runnable {
             try {
                 System.out.println("Checking services...");
                 Services.getAllServices().forEach((id, service) -> {
+                    System.out.println("Checking id " + id);
+                    System.out.println("Service url: " + service.url());
                     ServiceStates oldStatus = service.getState();
                     ServiceStates newStatus = serviceManager.checkStatusService(service);
                     if (!oldStatus.equals(newStatus)) {

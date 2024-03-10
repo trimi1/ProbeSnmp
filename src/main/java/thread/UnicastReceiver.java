@@ -30,6 +30,7 @@ public class UnicastReceiver implements Runnable {
                 System.out.println("Message recu");
                 String received = reader.readLine();
                 if(received != null){
+                    System.out.println("Message recu non null");
                     analyzeMessage(received, writerToMonitor);
                 }
             } catch (Exception e) {
@@ -60,6 +61,7 @@ public class UnicastReceiver implements Runnable {
             String id = matcher.group("Id");
             int min = Integer.parseInt(matcher.group("Min"));
             int max = Integer.parseInt(matcher.group("Max"));
+            System.out.println("id : " + id + " url : " + url + " min : " + min + " max : " + max);
             if(!Services.containsService(id)) {
                 Services.addService(id, new Service(url,id,min,max));
             }

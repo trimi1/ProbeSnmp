@@ -60,7 +60,7 @@ public class ServiceManager {
         return state;
     }
 
-    private String getValueSNMP2(String url){
+    private String getValueSNMP2(String url) {
         String host = null;
         String oid = null;
         int port = 0;
@@ -68,14 +68,17 @@ public class ServiceManager {
 
         SNMPv2 snmpv2 = new SNMPv2();
         IAnalyzer analyzer = Analyzer.getInstance();
-        String regexMessage = analyzer.giveMessageConstruction(url);
-        Pattern pattern = Pattern.compile(regexMessage);
-        Matcher matcher = pattern.matcher(url);
-        if(matcher.find()){
-            host = matcher.group("Host");
-            oid = matcher.group("Oid");
-            port = Integer.parseInt(matcher.group("Port"));
-            username = matcher.group("Username");
+        var optionalRegex = analyzer.getRegex(url);
+        if (!optionalRegex.isEmpty()) {
+            var regex = optionalRegex.get();
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(url);
+            if (matcher.find()) {
+                host = matcher.group("Host");
+                oid = matcher.group("Oid");
+                port = Integer.parseInt(matcher.group("Port"));
+                username = matcher.group("Username");
+            }
         }
         return snmpv2.getValue(host, port, username, oid);
     }
@@ -90,16 +93,19 @@ public class ServiceManager {
 
         SNMPv3 snmpv3 = new SNMPv3(true);
         IAnalyzer analyzer = Analyzer.getInstance();
-        String regexMessage = analyzer.giveMessageConstruction(url);
-        Pattern pattern = Pattern.compile(regexMessage);
-        Matcher matcher = pattern.matcher(url);
-        if(matcher.find()){
-            host = matcher.group("Host");
-            oid = matcher.group("Oid");
-            port = Integer.parseInt(matcher.group("Port"));
-            password = matcher.group("Password");
-            username = matcher.group("Username");
-            authentificateur = matcher.group("Auth");
+        var optionalRegex = analyzer.getRegex(url);
+        if (!optionalRegex.isEmpty()) {
+            var regex = optionalRegex.get();
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(url);
+            if(matcher.find()){
+                host = matcher.group("Host");
+                oid = matcher.group("Oid");
+                port = Integer.parseInt(matcher.group("Port"));
+                password = matcher.group("Password");
+                username = matcher.group("Username");
+                authentificateur = matcher.group("Auth");
+            }
         }
         return snmpv3.getValue(host, port, username, authentificateur, password, oid);
     }

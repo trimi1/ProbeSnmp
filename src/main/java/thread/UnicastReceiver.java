@@ -30,7 +30,6 @@ public class UnicastReceiver implements Runnable {
                 System.out.println("Message recu");
                 String received = reader.readLine();
                 if(received != null){
-                    System.out.println("Message recu non null");
                     analyzeMessage(received, writerToMonitor);
                 }
             } catch (Exception e) {
@@ -49,6 +48,7 @@ public class UnicastReceiver implements Runnable {
                 int frequency = Integer.parseInt(matcher.group("Frequency"));
                 Services.setFrequency(frequency);
                 String aurlgroup = matcher.group("Aurls");
+                System.out.println("Aurls : " + aurlgroup);
                 ajoutAurlService(aurlgroup);
             } else if (pattern.pattern().equals(Analyzer.STATUSOF_REGEX) && matcher.find()) {
                 String id = matcher.group("Id");

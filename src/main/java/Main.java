@@ -16,7 +16,7 @@ public class Main {
         var multicastSending = new MulticastSender(config.multicastAddress(), config.multicastDelay(), config.multicastPort(), config.multicastInterface(), config.protocol(), config.unicastPort());
         multicastSending.startThread();
 
-        UnicastReceiver lecteurNotifMD = new UnicastReceiver(config.unicastPort());
+        UnicastReceiver lecteurNotifMD = new UnicastReceiver(config.unicastPort(), config);
 
         ServiceCheckerThread serviceChecker = new ServiceCheckerThread(multicastSending);
 

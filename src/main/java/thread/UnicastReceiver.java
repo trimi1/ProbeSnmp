@@ -3,22 +3,30 @@ package thread;
 import be.helmo.reseau.analyzer.Analyzer;
 import be.helmo.reseau.builder.Builder;
 import be.helmo.reseau.interfaces.IAnalyzer;
+import config.Configuration;
+import security.AES;
+import security.IAES;
 import service.Service;
 import service.ServiceStates;
 import service.Services;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.*;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UnicastReceiver implements Runnable {
     private final ServerSocket socket;
 
-    public UnicastReceiver(int unicastPort) throws IOException {
+    public UnicastReceiver(int unicastPort, Configuration config) throws IOException {
         this.socket = new ServerSocket(unicastPort);
         startThread();
     }
@@ -39,19 +47,17 @@ public class UnicastReceiver implements Runnable {
     }
     private void analyzeMessage(String message,PrintWriter writerToMonitor) {
         IAnalyzer analyzer = Analyzer.getInstance();
-        var optionalRegex = analyzer.getRegex(message);
-        if (!optionalRegex.isEmpty()) {
-            var regex = optionalRegex.get();
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(message);
-            if (pattern.pattern().equals(Analyzer.SETUP_REGEX) && matcher.find()) {
-                int frequency = Integer.parseInt(matcher.group("Frequency"));
+        Map<String, String> groups = analyzer.getGroups(message);
+        if (!groups.isEmpty()) {
+            if (groups.get("Type") == "SETUP") {
+                System.out.println("setup recu");
+                int frequency = Integer.parseInt(groups.get("Frequency"));
                 Services.setFrequency(frequency);
-                String aurlgroup = matcher.group("Aurls");
+                String aurlgroup = groups.get("Aurls");
                 System.out.println("Aurls : " + aurlgroup);
                 ajoutAurlService(aurlgroup);
-            } else if (pattern.pattern().equals(Analyzer.STATUSOF_REGEX) && matcher.find()) {
-                String id = matcher.group("Id");
+            } else if (groups.get("Type") == "SATUSOF") {
+                String id = groups.get("Id");
                 sendStatusRespond(id, Services.getService(id).getState(), writerToMonitor);
             }
         }
@@ -72,6 +78,11 @@ public class UnicastReceiver implements Runnable {
     }
     private void sendStatusRespond(String id,ServiceStates states, PrintWriter writerToMonitor) {
         String message = Builder.buildStatus(id, states.toString());
+        /*IAES aes = new AES();
+        byte[] key = new byte[16];
+        secureRandom.nextBytes(key);
+        SecretKey secretKey = new SecretKeySpec(key, "AES");
+        aes.encrypt(message, config.getSecretKey());*/
         writerToMonitor.write(message);
         writerToMonitor.flush();
     }

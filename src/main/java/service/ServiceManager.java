@@ -5,6 +5,8 @@ import snmpversions.SNMPv3;
 import be.helmo.reseau.analyzer.Analyzer;
 import be.helmo.reseau.interfaces.IAnalyzer;
 
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,18 +70,11 @@ public class ServiceManager {
 
         SNMPv2 snmpv2 = new SNMPv2();
         IAnalyzer analyzer = Analyzer.getInstance();
-        var optionalRegex = analyzer.getRegex(url);
-        if (!optionalRegex.isEmpty()) {
-            var regex = optionalRegex.get();
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(url);
-            if (matcher.find()) {
-                host = matcher.group("Host");
-                oid = matcher.group("Oid");
-                port = Integer.parseInt(matcher.group("Port"));
-                username = matcher.group("Username");
-            }
-        }
+        Map<String, String> groups = analyzer.getGroups(url);
+        host = groups.get("Host");
+        oid = groups.get("Oid");
+        port = Integer.parseInt(groups.get("Port"));
+        username = groups.get("Username");
         return snmpv2.getValue(host, port, username, oid);
     }
 
@@ -93,20 +88,13 @@ public class ServiceManager {
 
         SNMPv3 snmpv3 = new SNMPv3(true);
         IAnalyzer analyzer = Analyzer.getInstance();
-        var optionalRegex = analyzer.getRegex(url);
-        if (!optionalRegex.isEmpty()) {
-            var regex = optionalRegex.get();
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(url);
-            if(matcher.find()){
-                host = matcher.group("Host");
-                oid = matcher.group("Oid");
-                port = Integer.parseInt(matcher.group("Port"));
-                password = matcher.group("Password");
-                username = matcher.group("Username");
-                authentificateur = matcher.group("Auth");
-            }
-        }
+        Map<String, String> groups = analyzer.getGroups(url);
+            host = groups.get("Host");
+            oid = groups.get("Oid");
+            port = Integer.parseInt(groups.get("Port"));
+            username = groups.get("Username");
+            password = groups.get("Password");
+            authentificateur = groups.get("Auth");
         return snmpv3.getValue(host, port, username, authentificateur, password, oid);
     }
 }

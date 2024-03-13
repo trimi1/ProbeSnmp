@@ -49,14 +49,15 @@ public class UnicastReceiver implements Runnable {
         IAnalyzer analyzer = Analyzer.getInstance();
         Map<String, String> groups = analyzer.getGroups(message);
         if (!groups.isEmpty()) {
-            if (groups.get("Type") == "SETUP") {
-                System.out.println("setup recu");
+            if (groups.get("Type").equals("SETUP")) {
+                System.out.println("Frequence :" + groups.get("Frequency"));
                 int frequency = Integer.parseInt(groups.get("Frequency"));
                 Services.setFrequency(frequency);
                 String aurlgroup = groups.get("Aurls");
-                System.out.println("Aurls : " + aurlgroup);
                 ajoutAurlService(aurlgroup);
-            } else if (groups.get("Type") == "SATUSOF") {
+                System.out.print("Service : " + Services.getService("snmp1").url());
+                System.out.print("Service : " + Services.getService("snmp2").url());
+            } else if (groups.get("Type").equals("SATUSOF")) {
                 String id = groups.get("Id");
                 sendStatusRespond(id, Services.getService(id).getState(), writerToMonitor);
             }

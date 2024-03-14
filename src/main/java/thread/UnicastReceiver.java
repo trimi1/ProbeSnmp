@@ -35,8 +35,8 @@ public class UnicastReceiver implements Runnable {
             try(Socket monitorDaemonSocket = socket.accept();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(monitorDaemonSocket.getInputStream()));
                 PrintWriter writerToMonitor = new PrintWriter(monitorDaemonSocket.getOutputStream(), true)) {
-                System.out.println("Message recu");
                 String received = reader.readLine();
+                System.out.println("**UnicastReceiver - MESSAGE RECEIVED : " + received);
                 if(received != null){
                     analyzeMessage(received, writerToMonitor);
                 }
@@ -55,9 +55,7 @@ public class UnicastReceiver implements Runnable {
                 Services.setFrequency(frequency);
                 String aurlgroup = groups.get("Aurls");
                 ajoutAurlService(aurlgroup);
-                System.out.print("Service : " + Services.getService("snmp1").url());
-                System.out.print("Service : " + Services.getService("snmp2").url());
-            } else if (groups.get("Type").equals("SATUSOF")) {
+            } else if (groups.get("Type").equals("STATUSOF")) {
                 String id = groups.get("Id");
                 sendStatusRespond(id, Services.getService(id).getState(), writerToMonitor);
             }
@@ -71,9 +69,10 @@ public class UnicastReceiver implements Runnable {
             String id = matcher.group("Id");
             int min = Integer.parseInt(matcher.group("Min"));
             int max = Integer.parseInt(matcher.group("Max"));
-            System.out.println("id : " + id + " url : " + url + " min : " + min + " max : " + max);
+            System.out.println();
             if(!Services.containsService(id)) {
                 Services.addService(id, new Service(url,id,min,max));
+                System.out.print("**UnicastReceiver - SERVICE ADDED : " + "id : " + id + " url : " + url + " min : " + min + " max : " + max);
             }
         }
     }
@@ -86,6 +85,7 @@ public class UnicastReceiver implements Runnable {
         aes.encrypt(message, config.getSecretKey());*/
         writerToMonitor.write(message);
         writerToMonitor.flush();
+        System.out.print("**UnicastReceiver - MESSAGE STATUS SENT : " + message);
     }
 
     public void startThread() {

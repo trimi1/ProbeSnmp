@@ -32,6 +32,22 @@ public class UnicastReceiver implements Runnable {
         this.config = config;
         startThread();
     }
+//    public void run() {
+//        while (true) {
+//            try(Socket monitorDaemonSocket = socket.accept();
+//                BufferedReader reader = new BufferedReader(new InputStreamReader(monitorDaemonSocket.getInputStream()));
+//                PrintWriter writerToMonitor = new PrintWriter(monitorDaemonSocket.getOutputStream(), true)) {
+//                String received = reader.readLine();
+//                System.out.println("**UnicastReceiver - MESSAGE RECEIVED : " + received);
+//                if(received != null){
+//                    analyzeMessage(received, writerToMonitor);
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
     public void run() {
         while (true) {
             try(Socket monitorDaemonSocket = socket.accept();
@@ -43,6 +59,7 @@ public class UnicastReceiver implements Runnable {
                 while ((bytesRead = inputStreamReader.read()) != -1) {
                     analyzeMessage(buffer, bytesRead, outputStream);
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -76,9 +93,10 @@ public class UnicastReceiver implements Runnable {
             String id = matcher.group("Id");
             int min = Integer.parseInt(matcher.group("Min"));
             int max = Integer.parseInt(matcher.group("Max"));
-            System.out.println("id : " + id + " url : " + url + " min : " + min + " max : " + max);
+            System.out.println();
             if(!Services.containsService(id)) {
                 Services.addService(id, new Service(url,id,min,max));
+                System.out.print("**UnicastReceiver - SERVICE ADDED : " + "id : " + id + " url : " + url + " min : " + min + " max : " + max);
             }
         }
     }

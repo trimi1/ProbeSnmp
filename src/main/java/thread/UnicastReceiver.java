@@ -30,16 +30,34 @@ public class UnicastReceiver implements Runnable {
         this.socket = new ServerSocket(unicastPort);
         startThread();
     }
+//    public void run() {
+//        while (true) {
+//            try(Socket monitorDaemonSocket = socket.accept();
+//                BufferedReader reader = new BufferedReader(new InputStreamReader(monitorDaemonSocket.getInputStream()));
+//                PrintWriter writerToMonitor = new PrintWriter(monitorDaemonSocket.getOutputStream(), true)) {
+//                String received = reader.readLine();
+//                System.out.println("**UnicastReceiver - MESSAGE RECEIVED : " + received);
+//                if(received != null){
+//                    analyzeMessage(received, writerToMonitor);
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
     public void run() {
         while (true) {
-            try(Socket monitorDaemonSocket = socket.accept();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(monitorDaemonSocket.getInputStream()));
-                PrintWriter writerToMonitor = new PrintWriter(monitorDaemonSocket.getOutputStream(), true)) {
-                String received = reader.readLine();
-                System.out.println("**UnicastReceiver - MESSAGE RECEIVED : " + received);
-                if(received != null){
+            try (Socket monitorDaemonSocket = socket.accept();
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(monitorDaemonSocket.getInputStream()));
+                 PrintWriter writerToMonitor = new PrintWriter(monitorDaemonSocket.getOutputStream(), true)) {
+
+                String received;
+                while ((received = reader.readLine()) != null) {
+                    System.out.println("**UnicastReceiver - MESSAGE RECEIVED : " + received);
                     analyzeMessage(received, writerToMonitor);
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

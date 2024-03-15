@@ -1,13 +1,14 @@
 package security;
 
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
+
 public class AES implements IAES{
     private final SecureRandom secureRandom = new SecureRandom();
     private final static int GCM_IV_LENGTH = 12;
@@ -15,7 +16,7 @@ public class AES implements IAES{
      * Encrypt a plaintext with given key.
      *
      * @param plaintext      to encrypt (utf-8 encoding will be used)
-     * @param secretKey      to encrypt, must be AES type, see {@link SecretKeySpec}
+     * @param secretKey      to encrypt, must be AES type, see {@link }
      * @param associatedData optional, additional (public) data to verify on decryption with GCM auth tag
      * @return encrypted message
      * @throws Exception if anything goes wrong

@@ -1,4 +1,4 @@
-package service;
+package snmp;
 
 public enum ServiceStates {
     OK,

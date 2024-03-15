@@ -1,4 +1,4 @@
-package service;
+package snmp;
 
 public class Service{
     private String url;

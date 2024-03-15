@@ -1,12 +1,10 @@
-package thread;
-
 import be.helmo.reseau.builder.Builder;
 
 import java.io.PrintWriter;
 import java.net.*;
 import java.util.List;
 
-public class UnicastSender {
+public class UnicastSenderTest {
     public static void main(String[] args) {
         System.out.println("UnicastSender started...");
         try {

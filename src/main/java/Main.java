@@ -1,17 +1,15 @@
 
 import config.ConfigReader;
 import config.Configuration;
-import service.*;
-import service.ServiceCheckerThread;
+import snmp.ServiceCheckerThread;
 
-import thread.MulticastSender;
-import thread.UnicastReceiver;
+import snmp.handler.MulticastSender;
+import snmp.handler.UnicastReceiver;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
 public class Main {
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {

@@ -1,1 +1,4 @@
 rootProject.name = 'ProbeSnmp'
+include 'src:main:tests'
+findProject(':src:main:tests')?.name = 'tests'
+

@@ -12,54 +12,59 @@ import service.Services;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UnicastReceiver implements Runnable {
     private final ServerSocket socket;
+    private final Configuration config;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     public UnicastReceiver(int unicastPort, Configuration config) throws IOException {
         this.socket = new ServerSocket(unicastPort);
+        this.config = config;
         startThread();
     }
     public void run() {
         while (true) {
             try(Socket monitorDaemonSocket = socket.accept();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(monitorDaemonSocket.getInputStream()));
-                PrintWriter writerToMonitor = new PrintWriter(monitorDaemonSocket.getOutputStream(), true)) {
+                InputStreamReader inputStreamReader = new InputStreamReader(monitorDaemonSocket.getInputStream());
+                OutputStream outputStream = monitorDaemonSocket.getOutputStream()) {
                 System.out.println("Message recu");
-                String received = reader.readLine();
-                if(received != null){
-                    analyzeMessage(received, writerToMonitor);
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStreamReader.read()) != -1) {
+                    analyzeMessage(buffer, bytesRead, outputStream);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-    private void analyzeMessage(String message,PrintWriter writerToMonitor) {
+    private void analyzeMessage(byte[] buffer, int bytesRead, OutputStream outputStream) throws Exception {
         IAnalyzer analyzer = Analyzer.getInstance();
-        Map<String, String> groups = analyzer.getGroups(message);
+        String messageSecret = decryptMesssage(buffer);
+        Map<String, String> groups = analyzer.getGroups(messageSecret);
         if (!groups.isEmpty()) {
             if (groups.get("Type").equals("SETUP")) {
-                System.out.println("Frequence :" + groups.get("Frequency"));
+                System.out.println("Setup message received");
                 int frequency = Integer.parseInt(groups.get("Frequency"));
                 Services.setFrequency(frequency);
                 String aurlgroup = groups.get("Aurls");
                 ajoutAurlService(aurlgroup);
-                System.out.print("Service : " + Services.getService("snmp1").url());
-                System.out.print("Service : " + Services.getService("snmp2").url());
-            } else if (groups.get("Type").equals("SATUSOF")) {
+                System.out.println("Service : " + Services.getService("snmp1").url());
+                System.out.println("Service : " + Services.getService("snmp2").url());
+            } else if (groups.get("Type").equals("STATUSOF")) {
+                System.out.println("StatusOf message received");
                 String id = groups.get("Id");
-                sendStatusRespond(id, Services.getService(id).getState(), writerToMonitor);
+                sendStatusRespond(id, Services.getService(id).getState(), outputStream);
             }
         }
     }
@@ -77,15 +82,26 @@ public class UnicastReceiver implements Runnable {
             }
         }
     }
-    private void sendStatusRespond(String id,ServiceStates states, PrintWriter writerToMonitor) {
+    private void sendStatusRespond(String id,ServiceStates states, OutputStream outputStream) throws Exception {
         String message = Builder.buildStatus(id, states.toString());
-        /*IAES aes = new AES();
-        byte[] key = new byte[16];
-        secureRandom.nextBytes(key);
+        byte[] messageSecret = encryptMesssage(message);
+        outputStream.write(messageSecret);
+        outputStream.flush();
+    }
+    private byte[] encryptMesssage(String messageSecret) throws Exception {
+        IAES aes = new AES();
+        byte[] key = Base64.getDecoder().decode(config.aesKey());
         SecretKey secretKey = new SecretKeySpec(key, "AES");
-        aes.encrypt(message, config.getSecretKey());*/
-        writerToMonitor.write(message);
-        writerToMonitor.flush();
+        byte[] associatedData = "ProtocolVersion1".getBytes(StandardCharsets.UTF_8);
+        return aes.encrypt(messageSecret, secretKey, associatedData);
+    }
+    private String decryptMesssage(byte[] messageSecret) throws Exception {
+        IAES aes = new AES();
+        byte[] key = Base64.getDecoder().decode(config.aesKey());
+            key = Arrays.copyOf(key, 32);
+        SecretKey secretKey = new SecretKeySpec(key, "AES");
+        byte[] associatedData = "ProtocolVersion1".getBytes(StandardCharsets.UTF_8);
+        return aes.decrypt(messageSecret, secretKey, associatedData);
     }
 
     public void startThread() {

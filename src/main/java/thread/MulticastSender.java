@@ -54,6 +54,7 @@ public class MulticastSender implements Runnable{
         InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);
         NetworkInterface netIf = NetworkInterface.getByName(multicastInterface);
         MulticastSocket s = new MulticastSocket(multicastPort);
+        s.setNetworkInterface(netIf);
 
         s.joinGroup(new InetSocketAddress(mcastaddr, 0), netIf);
         byte[] msgBytes = message.getBytes(StandardCharsets.UTF_8);

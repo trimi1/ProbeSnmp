@@ -1,4 +1,4 @@
-package thread;
+package snmp.handler;
 
 import be.helmo.reseau.analyzer.Analyzer;
 import be.helmo.reseau.builder.Builder;
@@ -6,9 +6,9 @@ import be.helmo.reseau.interfaces.IAnalyzer;
 import config.Configuration;
 import security.AES;
 import security.IAES;
-import service.Service;
-import service.ServiceStates;
-import service.Services;
+import snmp.Service;
+import snmp.ServiceStates;
+import snmp.Services;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -32,28 +32,13 @@ public class UnicastReceiver implements Runnable {
         this.config = config;
         startThread();
     }
-//    public void run() {
-//        while (true) {
-//            try(Socket monitorDaemonSocket = socket.accept();
-//                BufferedReader reader = new BufferedReader(new InputStreamReader(monitorDaemonSocket.getInputStream()));
-//                PrintWriter writerToMonitor = new PrintWriter(monitorDaemonSocket.getOutputStream(), true)) {
-//                String received = reader.readLine();
-//                System.out.println("**UnicastReceiver - MESSAGE RECEIVED : " + received);
-//                if(received != null){
-//                    analyzeMessage(received, writerToMonitor);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     public void run() {
         while (true) {
-            try (Socket monitorDaemonSocket = socket.accept();
-                 InputStream inputStream = monitorDaemonSocket.getInputStream();
-                 OutputStream outputStream = monitorDaemonSocket.getOutputStream()) {
-                System.out.println("Message recu");
+            try(Socket monitorDaemonSocket = socket.accept();
+                InputStream inputStream = monitorDaemonSocket.getInputStream();
+                OutputStream outputStream = monitorDaemonSocket.getOutputStream()) {
+                System.out.println("**UnicastReceiver - MESSAGE RECEIVED : ");
                 ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int bytesRead;
@@ -72,7 +57,6 @@ public class UnicastReceiver implements Runnable {
         String mm = new String(buffer, StandardCharsets.UTF_8);
         System.out.println("MessageSecret recu : " + mm);
         String messageSecret = decryptMesssage(buffer);
-        //String messageSecret = new String(buffer, StandardCharsets.UTF_8);
         System.out.println("Message secret : " + messageSecret);
         Map<String, String> groups = analyzer.getGroups(messageSecret);
         if (!groups.isEmpty()) {

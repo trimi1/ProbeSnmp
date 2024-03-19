@@ -1,4 +1,4 @@
-package service;
+package snmp;
 
 import snmpversions.SNMPv2;
 import snmpversions.SNMPv3;
@@ -6,9 +6,6 @@ import be.helmo.reseau.analyzer.Analyzer;
 import be.helmo.reseau.interfaces.IAnalyzer;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ServiceManager {
     //checker si on a affaire à un service snmpv2 ou v3 (checker pour le "#" dans url qui correspond à snmpv3)
@@ -62,7 +59,7 @@ public class ServiceManager {
         return state;
     }
 
-    private String getValueSNMP2(String url) {
+    private String getValueSNMP2(String url) {//TODO: tester dans service manager ce qui se passe après qu'il y ait des null (getValueSNMPv2 et v3)
         String host = null;
         String oid = null;
         int port = 0;
@@ -78,7 +75,7 @@ public class ServiceManager {
         return snmpv2.getValue(host, port, username, oid);
     }
 
-    private String getValueSNMP3(String url){
+    private String getValueSNMP3(String url){//TODO: tester dans service manager ce qui se passe après qu'il y ait des null (getValueSNMPv2 et v3)
         String host = null;
         String oid = null;
         int port = 0;

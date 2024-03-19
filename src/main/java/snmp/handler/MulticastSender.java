@@ -1,4 +1,4 @@
-package thread;
+package snmp.handler;
 
 import be.helmo.reseau.builder.Builder;
 

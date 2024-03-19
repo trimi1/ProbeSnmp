@@ -1,5 +1,3 @@
-package thread;
-
 import be.helmo.reseau.builder.Builder;
 import security.AES;
 import security.IAES;
@@ -13,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 
-public class UnicastSender {
+public class UnicastSenderTest {
     public static void main(String[] args) {
         System.out.println("UnicastSender started...");
         try {

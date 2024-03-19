@@ -1,4 +1,4 @@
-package service;
+package snmp;
 
 import java.util.HashMap;
 import java.util.Map;

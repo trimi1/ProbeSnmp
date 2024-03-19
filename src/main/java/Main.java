@@ -1,11 +1,10 @@
 
 import config.ConfigReader;
 import config.Configuration;
-import service.*;
-import service.ServiceCheckerThread;
+import snmp.ServiceCheckerThread;
 
-import thread.MulticastSender;
-import thread.UnicastReceiver;
+import snmp.handler.MulticastSender;
+import snmp.handler.UnicastReceiver;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;

@@ -1,6 +1,6 @@
-package service;
+package snmp;
 
-import thread.MulticastSender;
+import snmp.handler.MulticastSender;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;

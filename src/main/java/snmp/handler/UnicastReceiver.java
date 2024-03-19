@@ -90,11 +90,11 @@ public class UnicastReceiver implements Runnable {
     }
     private void sendStatusRespond(String id,ServiceStates states, OutputStream outputStream) throws Exception {
         String message = Builder.buildStatus(id, states.toString());
-        byte[] messageSecret = encryptMesssage(message);
+        byte[] messageSecret = encryptMessage(message);
         outputStream.write(messageSecret);
         outputStream.flush();
     }
-    private byte[] encryptMesssage(String messageSecret) throws Exception {
+    private byte[] encryptMessage(String messageSecret) throws Exception {
         IAES aes = new AES();
         byte[] key = Base64.getDecoder().decode(config.aesKey());
         SecretKey secretKey = new SecretKeySpec(key, "AES");

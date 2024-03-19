@@ -16,7 +16,6 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -25,7 +24,6 @@ import java.util.regex.Pattern;
 public class UnicastReceiver implements Runnable {
     private final ServerSocket socket;
     private final Configuration config;
-    private final SecureRandom secureRandom = new SecureRandom();
 
     public UnicastReceiver(int unicastPort, Configuration config) throws IOException {
         this.socket = new ServerSocket(unicastPort);

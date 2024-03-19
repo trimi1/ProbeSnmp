@@ -50,24 +50,30 @@ public class UnicastReceiver implements Runnable {
 
     public void run() {
         while (true) {
-            try(Socket monitorDaemonSocket = socket.accept();
-                InputStreamReader inputStreamReader = new InputStreamReader(monitorDaemonSocket.getInputStream());
-                OutputStream outputStream = monitorDaemonSocket.getOutputStream()) {
+            try (Socket monitorDaemonSocket = socket.accept();
+                 InputStream inputStream = monitorDaemonSocket.getInputStream();
+                 OutputStream outputStream = monitorDaemonSocket.getOutputStream()) {
                 System.out.println("Message recu");
+                ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int bytesRead;
-                while ((bytesRead = inputStreamReader.read()) != -1) {
-                    analyzeMessage(buffer, bytesRead, outputStream);
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    byteStream.write(buffer, 0, bytesRead);
                 }
-
+                byte[] messageBytes = byteStream.toByteArray();
+                analyzeMessage(messageBytes, outputStream);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-    private void analyzeMessage(byte[] buffer, int bytesRead, OutputStream outputStream) throws Exception {
+    private void analyzeMessage(byte[] buffer, OutputStream outputStream) throws Exception {
         IAnalyzer analyzer = Analyzer.getInstance();
+        String mm = new String(buffer, StandardCharsets.UTF_8);
+        System.out.println("MessageSecret recu : " + mm);
         String messageSecret = decryptMesssage(buffer);
+        //String messageSecret = new String(buffer, StandardCharsets.UTF_8);
+        System.out.println("Message secret : " + messageSecret);
         Map<String, String> groups = analyzer.getGroups(messageSecret);
         if (!groups.isEmpty()) {
             if (groups.get("Type").equals("SETUP")) {
@@ -116,7 +122,6 @@ public class UnicastReceiver implements Runnable {
     private String decryptMesssage(byte[] messageSecret) throws Exception {
         IAES aes = new AES();
         byte[] key = Base64.getDecoder().decode(config.aesKey());
-            key = Arrays.copyOf(key, 32);
         SecretKey secretKey = new SecretKeySpec(key, "AES");
         byte[] associatedData = "ProtocolVersion1".getBytes(StandardCharsets.UTF_8);
         return aes.decrypt(messageSecret, secretKey, associatedData);

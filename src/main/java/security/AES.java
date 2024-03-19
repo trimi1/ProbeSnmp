@@ -12,6 +12,7 @@ import java.security.spec.AlgorithmParameterSpec;
 public class AES implements IAES{
     private final SecureRandom secureRandom = new SecureRandom();
     private final static int GCM_IV_LENGTH = 12;
+    //private final static int GCM_IV_LENGTH = 1024;
     /**
      * Encrypt a plaintext with given key.
      *

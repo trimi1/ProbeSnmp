@@ -40,7 +40,7 @@ public class Main {
         ServiceCheckerThread serviceChecker = new ServiceCheckerThread(multicastSending);
 
     }
-    public static SecretKey generateAESKey() throws NoSuchAlgorithmException {
+    /*public static SecretKey generateAESKey() throws NoSuchAlgorithmException {
         // Create a KeyGenerator instance for AES
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
 
@@ -51,5 +51,5 @@ public class Main {
         SecretKey secretKey = keyGenerator.generateKey();
 
         return secretKey;
-    }
+    }*/
 }

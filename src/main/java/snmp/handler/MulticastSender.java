@@ -36,6 +36,7 @@ public class MulticastSender implements Runnable{
         }
     }
     synchronized private void sendProbeMessage() throws IOException {
+        System.out.println("Sending probe message");
         String message = Builder.buildProbe(protocol, uniCastPort);
         InetAddress mcastaddr = InetAddress.getByName(multicastAddress);
         InetSocketAddress group = new InetSocketAddress(mcastaddr, multicastPort);

@@ -16,7 +16,6 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -25,7 +24,6 @@ import java.util.regex.Pattern;
 public class UnicastReceiver implements Runnable {
     private final ServerSocket socket;
     private final Configuration config;
-    private final SecureRandom secureRandom = new SecureRandom();
 
     public UnicastReceiver(int unicastPort, Configuration config) throws IOException {
         this.socket = new ServerSocket(unicastPort);
@@ -36,23 +34,28 @@ public class UnicastReceiver implements Runnable {
     public void run() {
         while (true) {
             try(Socket monitorDaemonSocket = socket.accept();
-                InputStreamReader inputStreamReader = new InputStreamReader(monitorDaemonSocket.getInputStream());
+                InputStream inputStream = monitorDaemonSocket.getInputStream();
                 OutputStream outputStream = monitorDaemonSocket.getOutputStream()) {
                 System.out.println("**UnicastReceiver - MESSAGE RECEIVED : ");
+                ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int bytesRead;
-                while ((bytesRead = inputStreamReader.read()) != -1) {
-                    analyzeMessage(buffer, bytesRead, outputStream);
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    byteStream.write(buffer, 0, bytesRead);
                 }
-
+                byte[] messageBytes = byteStream.toByteArray();
+                analyzeMessage(messageBytes, outputStream);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-    private void analyzeMessage(byte[] buffer, int bytesRead, OutputStream outputStream) throws Exception {
+    private void analyzeMessage(byte[] buffer, OutputStream outputStream) throws Exception {
         IAnalyzer analyzer = Analyzer.getInstance();
+        String mm = new String(buffer, StandardCharsets.UTF_8);
+        System.out.println("MessageSecret recu : " + mm);
         String messageSecret = decryptMesssage(buffer);
+        System.out.println("Message secret : " + messageSecret);
         Map<String, String> groups = analyzer.getGroups(messageSecret);
         if (!groups.isEmpty()) {
             if (groups.get("Type").equals("SETUP")) {
@@ -87,11 +90,11 @@ public class UnicastReceiver implements Runnable {
     }
     private void sendStatusRespond(String id,ServiceStates states, OutputStream outputStream) throws Exception {
         String message = Builder.buildStatus(id, states.toString());
-        byte[] messageSecret = encryptMesssage(message);
+        byte[] messageSecret = encryptMessage(message);
         outputStream.write(messageSecret);
         outputStream.flush();
     }
-    private byte[] encryptMesssage(String messageSecret) throws Exception {
+    private byte[] encryptMessage(String messageSecret) throws Exception {
         IAES aes = new AES();
         byte[] key = Base64.getDecoder().decode(config.aesKey());
         SecretKey secretKey = new SecretKeySpec(key, "AES");
@@ -101,7 +104,6 @@ public class UnicastReceiver implements Runnable {
     private String decryptMesssage(byte[] messageSecret) throws Exception {
         IAES aes = new AES();
         byte[] key = Base64.getDecoder().decode(config.aesKey());
-            key = Arrays.copyOf(key, 32);
         SecretKey secretKey = new SecretKeySpec(key, "AES");
         byte[] associatedData = "ProtocolVersion1".getBytes(StandardCharsets.UTF_8);
         return aes.decrypt(messageSecret, secretKey, associatedData);

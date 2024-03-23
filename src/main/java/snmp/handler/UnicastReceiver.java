@@ -36,15 +36,19 @@ public class UnicastReceiver implements Runnable {
             try(Socket monitorDaemonSocket = socket.accept();
                 InputStream inputStream = monitorDaemonSocket.getInputStream();
                 OutputStream outputStream = monitorDaemonSocket.getOutputStream()) {
-                System.out.println("**UnicastReceiver - MESSAGE RECEIVED : ");
-                ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    byteStream.write(buffer, 0, bytesRead);
+                while (true) {
+                    System.out.println("**UnicastReceiver - MESSAGE RECEIVED : ");
+                    byte[] messageBytes;
+                    byte[] buffer = new byte[1024];
+                    int bytesRead = inputStream.read(buffer);
+                    if (bytesRead == -1) {
+                        break; // End of stream has been reached
+                    }
+                    messageBytes = new byte[bytesRead];
+                    System.arraycopy(buffer, 0, messageBytes, 0, bytesRead);
+                    System.out.println("Message reçu : " + decryptMesssage(messageBytes));
+                    analyzeMessage(messageBytes, outputStream);
                 }
-                byte[] messageBytes = byteStream.toByteArray();
-                analyzeMessage(messageBytes, outputStream);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -52,10 +56,8 @@ public class UnicastReceiver implements Runnable {
     }
     private void analyzeMessage(byte[] buffer, OutputStream outputStream) throws Exception {
         IAnalyzer analyzer = Analyzer.getInstance();
-        String mm = new String(buffer, StandardCharsets.UTF_8);
-        System.out.println("MessageSecret recu : " + mm);
         String messageSecret = decryptMesssage(buffer);
-        System.out.println("Message secret : " + messageSecret);
+        System.out.println("Message secret recu: " + messageSecret);
         Map<String, String> groups = analyzer.getGroups(messageSecret);
         if (!groups.isEmpty()) {
             if (groups.get("Type").equals("SETUP")) {
@@ -84,13 +86,15 @@ public class UnicastReceiver implements Runnable {
             System.out.println();
             if(!Services.containsService(id)) {
                 Services.addService(id, new Service(url,id,min,max));
-                System.out.print("**UnicastReceiver - SERVICE ADDED : " + "id : " + id + " url : " + url + " min : " + min + " max : " + max);
+                System.out.println("**UnicastReceiver - SERVICE ADDED : " + "id : " + id + " url : " + url + " min : " + min + " max : " + max);
             }
         }
     }
     private void sendStatusRespond(String id,ServiceStates states, OutputStream outputStream) throws Exception {
         String message = Builder.buildStatus(id, states.toString());
+        System.out.println("Message secret Status envoyé: " + message);
         byte[] messageSecret = encryptMessage(message);
+        System.out.println("Message secret Status envoyé: " + new String(messageSecret, StandardCharsets.UTF_8));
         outputStream.write(messageSecret);
         outputStream.flush();
     }

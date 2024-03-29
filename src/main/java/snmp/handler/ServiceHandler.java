@@ -1,26 +1,32 @@
-package snmp;
+package snmp.handler;
 
-import snmp.handler.MulticastSender;
+import snmp.service.ServiceManager;
+import snmp.service.ServiceStates;
+import snmp.service.Services;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ServiceCheckerThread implements Runnable {
-    private MulticastSender multicastSender;
-    private ServiceManager serviceManager;
+public class ServiceHandler implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceHandler.class);
+    private final MulticastHandler multicastHandler;
+    private final ServiceManager serviceManager;
 
-    public ServiceCheckerThread(MulticastSender multicastSender) {
-        this.multicastSender = multicastSender;
+    public ServiceHandler(MulticastHandler multicastHandler) {
+        this.multicastHandler = multicastHandler;
         this.serviceManager = new ServiceManager();
-        startThread();
     }
 
     @Override
     public void run() {
         AtomicBoolean changed = new AtomicBoolean(false);
-        while (true) {
+        while (!Thread.interrupted()) {
             try {
-                System.out.println("Checking services...");
+
+
+                LOGGER.info("- - - - Checking services... - - - - -");
                 Services.getAllServices().forEach((id, service) -> {
                     ServiceStates oldStatus = service.getState();
                     ServiceStates newStatus = serviceManager.checkStatusService(service);
@@ -30,18 +36,21 @@ public class ServiceCheckerThread implements Runnable {
                 });
                 if(changed.get()) {
                     try {
-                        multicastSender.sendDataMessage();
-                        System.out.println("**MESSAGE DATA HAS BEEN SENT");
+                        sendDataMessage();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        LOGGER.error("Error sending data message", e);
                     }
                     changed.set(false);
                 }
                 Thread.sleep(Services.getFrequency() * 1000L);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.error("ServiceHandler interrupted", e);
             }
         }
+    }
+
+    synchronized public void sendDataMessage() throws IOException {
+        multicastHandler.sendDataMessage();
     }
 
     public void startThread() {

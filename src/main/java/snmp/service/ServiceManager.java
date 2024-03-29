@@ -1,4 +1,4 @@
-package snmp;
+package snmp.service;
 
 import snmpversions.SNMPv2;
 import snmpversions.SNMPv3;
@@ -15,12 +15,10 @@ public class ServiceManager {
 
     //obtenir la valeur du service (à l'aide d'oid -> type de donnée à récupérer)
     private String getValue(Service service){
-        String value = null;
+        String value;
         if (isVersionSnmpThree(service)){
-            SNMPv3 snmpv3 = new SNMPv3(true);
             value = getValueSNMP3(service.url());
         } else {
-            SNMPv2 snmpv2 = new SNMPv2();
             value = getValueSNMP2(service.url());
         }
         return value;

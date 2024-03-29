@@ -8,7 +8,7 @@ import be.helmo.reseau.interfaces.IAnalyzer;
 import java.util.Map;
 
 public class ServiceManager {
-    private IAnalyzer analyzer = Analyzer.getInstance();
+    private final IAnalyzer analyzer = Analyzer.getInstance();
 
     public ServiceStates checkStatusService(Service service) {
         String value = getValue(service);

@@ -1,10 +1,10 @@
 package snmp.service;
 
 public class Service{
-    private String url;
-    private String id;
-    private int min;
-    private int max;
+    private final String url;
+    private final String id;
+    private final int min;
+    private final int max;
     private ServiceStates state;
 
     public Service(String url, String id, int min, int max) {

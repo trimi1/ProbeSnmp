@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group = 'be.helmo.reseau'
@@ -23,4 +24,12 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+application {
+    mainClass.set('Main')
+}
+
+run {
+    args = ['./src/main/resources/configProbes.json']
 }

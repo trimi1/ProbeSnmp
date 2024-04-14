@@ -1,7 +1,7 @@
 
 ---
 
-# Installation de la Probe SNMP
+# Probe SNMP
 ## <ins>Prérequis</ins>
 
 Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur votre système :

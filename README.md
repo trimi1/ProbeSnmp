@@ -7,7 +7,7 @@
 Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur votre système :
 
 - [Java](https:/jdk.java.net/21/)       : version 21.0.2
-- **(pas nécessaire, normalement préinstallé sur le projet)** [Gradle](https:/gradle.org/install/)  : version 8.3
+- [Gradle](https:/gradle.org/install/)  : version 8.3 **(pas nécessaire, normalement préinstallé sur le projet)**
 
 Vous pouvez vérifier si Java et Gradle sont correctement installés en exécutant les commandes suivantes dans votre terminal :
 
